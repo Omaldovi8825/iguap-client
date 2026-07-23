@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iguapp</title>
+    <!-- Compiled and minified CSS -->
+    <!-- <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    /> -->
+    <!-- Compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <!-- <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+    /> -->
+    <link rel="stylesheet" href="css/main.css" />
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  </head>
+  <body>
+    <div id="app" class="container">
+      <div class="row">
+        <div class="col s12 m2 hide-on-small-only"></div>
+        <div class="col s12 m8">
+          <h4 class="center-align">Cotización</h4>
+          <div class="divider"></div>
+          <div v-if="isLoading" class="progress">
+            <div class="indeterminate"></div>
+          </div>
+          <div v-else class="section">
+            <form>
+              <div v-for="(pieza, index) in cotizacion.secciones" class="row">
+                <div class="col s12 input-field mb-2">
+                  <select v-model="cotizacion.secciones[index].form.pieza">
+                    <option value="" selected disabled>
+                      Seleccione una pieza
+                    </option>
+                    <option
+                      v-for="pieza in piezasDisponibles"
+                      :value="pieza"
+                      :key="pieza"
+                    >
+                      {{ pieza }}
+                    </option>
+                  </select>
+                  <label>Pieza</label>
+                </div>
+                <div class="col s6 input-field mb-2">
+                  <input
+                    type="number"
+                    step="0.01"
+                    v-model="cotizacion.secciones[index].form.ancho"
+                    class="validate"
+                  />
+                  <label>Ancho (cm)</label>
+                </div>
+                <div class="col s6 input-field mb-2">
+                  <input
+                    type="number"
+                    step="0.01"
+                    v-model="cotizacion.secciones[index].form.alto"
+                    class="validate"
+                  />
+                  <label>Alto (cm)</label>
+                </div>
+                <div class="col s6 input-field mb-2">
+                  <select v-model="cotizacion.secciones[index].form.pulgadas">
+                    <option
+                      v-for="option in cotizacion.secciones[index].pulgadasDisponibles"
+                      :value="option"
+                      :key="option"
+                    >
+                      {{ option }}
+                    </option>
+                  </select>
+                  <label>Medida perfiles (in)</label>
+                </div>
+                <div class="col s6 input-field mb-2">
+                  <select v-model="cotizacion.secciones[index].form.color">
+                    <option
+                      v-for="option in cotizacion.secciones[index].coloresDisponibles"
+                      :value="option"
+                      :key="option"
+                    >
+                      {{ option }}
+                    </option>
+                  </select>
+                  <label>Color perfiles</label>
+                </div>
+                <div class="col s6 input-field mb-2">
+                  <input
+                    type="number"
+                    v-model="cotizacion.secciones[index].form.carretillas"
+                    class="validate"
+                  />
+                  <label>Carretillas (u)</label>
+                </div>
+                <div class="col s6 input-field mb-2">
+                  <input
+                    type="number"
+                    v-model="cotizacion.secciones[index].form.jaladeras"
+                    class="validate"
+                  />
+                  <label>Jaladeras (u)</label>
+                </div>
+                <div class="col s6 input-field">
+                  <input
+                    type="number"
+                    step="0.01"
+                    v-model="cotizacion.secciones[index].form.empaque"
+                    class="validate"
+                  />
+                  <label>Empaque (cm)</label>
+                </div>
+                <div class="col s6 input-field">
+                  <input
+                    type="number"
+                    step="0.01"
+                    v-model="cotizacion.secciones[index].form.silicon"
+                    class="validate"
+                  />
+                  <label>Silicon ($)</label>
+                </div>
+                <!-- <div class="col s12">
+                  <button class="btn waves-effect waves-light w-100">
+                    Calcular
+                  </button>
+                </div> -->
+              </div>
+            </form>
+          </div>
+          <!-- DESGLOSE -->
+          <div class="divider"></div>
+          <div class="section">
+            <h5>Desglose</h5>
+            <table v-for="(item, index) in desglose" :key="index">
+              <thead>
+                <tr>
+                  <th colspan="2" class="center-align">
+                    {{ item.pieza.toUpperCase() }}
+                  </th>
+                </tr>
+                <tr>
+                  <th>Material</th>
+                  <th>Precio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="[llave, valor] in Object.entries(item.precios)"
+                  key="llave"
+                >
+                  <td>{{ llave }}</td>
+                  <td>{{ formatMoney(valor) }}</td>
+                </tr>
+                <tr>
+                  <td><strong>Total</strong></td>
+                  <td><strong>{{ formatMoney(item.total) }}</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col s12 m2 hide-on-small-only"></div>
+      </div>
+    </div>
+
+    <script>
+      // document.addEventListener("DOMContentLoaded", function () {
+      //   var elems = document.querySelectorAll("select");
+      //   var instances = M.FormSelect.init(elems);
+      // });
+    </script>
+
+    <script src="./js/main.js" type="module"></script>
+  </body>
+</html>
