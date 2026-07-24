@@ -33,6 +33,15 @@ createApp({
             cantidad: 2,
             id: "",
           },
+          jaladeras: {
+            id: "",
+            cantidad: 1,
+          },
+          vinil: {
+            id: "",
+            medida: 0,
+          },
+          silicon: 0,
         },
       ],
     });
@@ -61,29 +70,24 @@ createApp({
     );
 
     const optionsDisponibles = computed(() => {
-      const medidasPerfilDisponibles = [
-        ...new Set(
-          materialesFormat.value.ventana.perfil?.map((item) => item.medida) ||
-            [],
-        ),
-      ];
-      const medidasVidrioDisponibles = [
-        ...new Set(
-          materialesFormat.value.ventana.vidrio?.map((item) => item.medida) ||
-            [],
-        ),
-      ];
+      const medidasPerfilDisponibles =
+        materialesFormat.value.ventana.perfil?.map((item) => item.medida) || [];
+      const medidasVidrioDisponibles =
+        materialesFormat.value.ventana.vidrio?.map((item) => item.medida) || [];
+      const medidasCarretillaDisponibles =
+        materialesFormat.value.ventana.carretilla?.map((item) => item.medida) ||
+        [];
 
       const opttions = {
         ventana: {
           perfil: {
-            medidas: medidasPerfilDisponibles,
+            medidas: [...new Set(medidasPerfilDisponibles)],
           },
           vidrio: {
-            medidas: medidasVidrioDisponibles,
+            medidas: [...new Set(medidasVidrioDisponibles)],
           },
           carretilla: {
-            medidas: [],
+            medidas: [...new Set(medidasCarretillaDisponibles)],
           },
         },
       };
@@ -110,6 +114,19 @@ createApp({
       return vidriosDisponibles;
     };
 
+    const carretillaDisponibles = (iPieza) => {
+      const medidaCarretilla = cotizacion.piezas[iPieza].carretillas.medida;
+      const carretillasDisponibles =
+        materialesFormat.value.ventana.carretilla?.filter(
+          (item) => item.medida == medidaCarretilla,
+        );
+      return carretillasDisponibles;
+    };
+
+    const calcular = () => {
+      alert("Calcular");
+    };
+
     // Lifecycle hooks
     onMounted(async () => {
       await cargarMaterialesDB();
@@ -127,6 +144,8 @@ createApp({
       materialesFormat,
       coloresPerfilDisponibles,
       vidrioDisponibles,
+      carretillaDisponibles,
+      calcular,
     };
   },
 }).mount("#app");

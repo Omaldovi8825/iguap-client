@@ -20,7 +20,7 @@
       <div class="row">
         <div class="col"></div>
         <div class="col-12 col-md-8 border">
-          <form class="border p-3">
+          <form @submit.prevent="calcular" class="border p-3">
             <div
               v-for="(pieza, iPieza) in cotizacion.piezas"
               :key="iPieza"
@@ -54,8 +54,11 @@
                     class="form-control form-control-sm"
                   />
                 </div>
+                <div class="col-12">
+                  <label class="form-label">Perfiles</label>
+                </div>
                 <div class="col-6 mb-3">
-                  <label class="form-label">Medida Perfiles (in)</label>
+                  <label class="form-label">(in)</label>
                   <select
                     v-model="cotizacion.piezas[iPieza].perfiles.medida"
                     class="form-control form-control-sm"
@@ -70,7 +73,7 @@
                   </select>
                 </div>
                 <div class="col-6 mb-3">
-                  <label class="form-label">Color Perfiles</label>
+                  <label class="form-label">Color</label>
                   <select
                     v-model="cotizacion.piezas[iPieza].perfiles.color"
                     class="form-control form-control-sm"
@@ -84,8 +87,11 @@
                     </option>
                   </select>
                 </div>
+                <div class="col-12">
+                  <label class="form-label">Vidrio</label>
+                </div>
                 <div class="col-6 mb-3">
-                  <label class="form-label">Medida vidrio (mm)</label>
+                  <label class="form-label">(mm)</label>
                   <select
                     v-model="cotizacion.piezas[iPieza].vidrio.medida"
                     class="form-control form-control-sm"
@@ -100,7 +106,7 @@
                   </select>
                 </div>
                 <div class="col-6 mb-3">
-                  <label class="form-label">Vidrio</label>
+                  <label class="form-label">Modelo</label>
                   <select
                     v-model="cotizacion.piezas[iPieza].vidrio.id"
                     class="form-control form-control-sm"
@@ -114,9 +120,120 @@
                     </option>
                   </select>
                 </div>
+                <div class="col-12">
+                  <label class="form-label">Carretillas</label>
+                </div>
+                <div class="col-3 mb-3">
+                  <label class="form-label">(in)</label>
+                  <select
+                    v-model="cotizacion.piezas[iPieza].carretillas.medida"
+                    class="form-control form-control-sm"
+                  >
+                    <option
+                      v-for="medida in optionsDisponibles.ventana.carretilla.medidas"
+                      :key="medida"
+                      :value="medida"
+                    >
+                      {{ medida }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-3 mb-3">
+                  <label class="form-label">Cantidad</label>
+                  <input
+                    type="number"
+                    step="1"
+                    v-model="cotizacion.piezas[iPieza].carretillas.cantidad"
+                    class="form-control form-control-sm"
+                  />
+                </div>
+                <div class="col-6 mb-3">
+                  <label class="form-label">Modelo</label>
+                  <select
+                    v-model="cotizacion.piezas[iPieza].carretillas.id"
+                    class="form-control form-control-sm"
+                  >
+                    <option
+                      v-for="carretilla in carretillaDisponibles(iPieza)"
+                      :key="carretilla.id"
+                      :value="carretilla.id"
+                    >
+                      {{ carretilla.material }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Jaladeras</label>
+                </div>
+                <div class="col-6 mb-3">
+                  <label class="form-label">Cantidad</label>
+                  <input
+                    type="number"
+                    step="1"
+                    v-model="cotizacion.piezas[iPieza].jaladeras.cantidad"
+                    class="form-control form-control-sm"
+                  />
+                </div>
+                <div class="col-6 mb-3">
+                  <label class="form-label">Modelo</label>
+                  <select
+                    v-model="cotizacion.piezas[iPieza].jaladeras.id"
+                    class="form-control form-control-sm"
+                  >
+                    <option
+                      v-for="jaladera in materialesFormat.ventana.jaladera"
+                      :key="jaladera.id"
+                      :value="jaladera.id"
+                    >
+                      {{ jaladera.material }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Vinil (empaque)</label>
+                </div>
+                <div class="col-6 mb-3">
+                  <label class="form-label">(cm)</label>
+                  <input
+                    type="number"
+                    step="0.5"
+                    v-model="cotizacion.piezas[iPieza].vinil.medida"
+                    class="form-control form-control-sm"
+                  />
+                </div>
+                <div class="col-6 mb-3">
+                  <label class="form-label">Modelo</label>
+                  <select
+                    v-model="cotizacion.piezas[iPieza].vinil.id"
+                    class="form-control form-control-sm"
+                  >
+                    <option
+                      v-for="vinil in materialesFormat.ventana.vinil"
+                      :key="vinil.id"
+                      :value="vinil.id"
+                    >
+                      {{ vinil.material }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-6 mb-3">
+                  <label class="form-label">Silicón ($)</label>
+                  <input
+                    type="number"
+                    step="0.5"
+                    v-model="cotizacion.piezas[iPieza].silicon"
+                    class="form-control form-control-sm"
+                  />
+                </div>
               </template>
             </div>
+            <div>
+              <button class="btn btn-outline-secondary w-100">Calcular</button>
+            </div>
           </form>
+          <section>
+            <p>desglose</p>
+          </section>
         </div>
         <div class="col"></div>
       </div>
