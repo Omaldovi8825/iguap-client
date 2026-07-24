@@ -1,4 +1,9 @@
-import { fetchMateriales, formatMoney, formatPrecios } from "./utils.js";
+import {
+  fetchMateriales,
+  formatMoney,
+  formatPrecios,
+  formatMMateriales,
+} from "./utils.js";
 import { PERFILES } from "./constants.js";
 const { createApp, ref, onMounted, reactive, watch, computed, nextTick } = Vue;
 
@@ -8,7 +13,28 @@ createApp({
     const materialesDB = ref([]);
     const formNuevaPieza = ref("");
     const cotizacion = reactive({
-      piezas: [],
+      piezas: [
+        {
+          pieza: "ventana",
+          medidas: {
+            ancho: "",
+            alto: "",
+          },
+          perfiles: {
+            color: "",
+            medida: 2,
+          },
+          vidrio: {
+            medida: 2,
+            id: "",
+          },
+          carretillas: {
+            medida: 2,
+            cantidad: 2,
+            id: "",
+          },
+        },
+      ],
     });
 
     const resetFormaNuevaPieza = () => {
@@ -29,73 +55,65 @@ createApp({
     };
 
     // Computed properties
-    const optionsDisponibles = computed(() => {
-      const items = materialesDB.value.reduce(
-        (acc, item) => {
-          if (!acc.piezas.includes(item.pieza)) {
-            acc.piezas.push(item.pieza);
-          }
-          if (PERFILES.includes(item.material)) {
-            if (!acc.medidasPerfil.includes(item.medida)) {
-              acc.medidasPerfil.push(item.medida);
-            }
-            if (!acc.coloresPerfil.includes(item.color)) {
-              acc.coloresPerfil.push(item.color);
-            }
-          }
-          return acc;
-        },
-        {
-          piezas: [],
-          medidasPerfil: [],
-          coloresPerfil: [],
-        },
-      );
 
-      return items;
+    const materialesFormat = computed(() =>
+      formatMMateriales(materialesDB.value),
+    );
+
+    const optionsDisponibles = computed(() => {
+      const medidasPerfilDisponibles = [
+        ...new Set(
+          materialesFormat.value.ventana.perfil?.map((item) => item.medida) ||
+            [],
+        ),
+      ];
+      const medidasVidrioDisponibles = [
+        ...new Set(
+          materialesFormat.value.ventana.vidrio?.map((item) => item.medida) ||
+            [],
+        ),
+      ];
+
+      const opttions = {
+        ventana: {
+          perfil: {
+            medidas: medidasPerfilDisponibles,
+          },
+          vidrio: {
+            medidas: medidasVidrioDisponibles,
+          },
+          carretilla: {
+            medidas: [],
+          },
+        },
+      };
+
+      return opttions;
     });
 
-    // const isVentanaSelected = computed(() => {
-    //   return formNuevaPieza.value.pieza === "ventana";
-    // });
-
     // Methods
-    const cambiarMedidaPerfiles = (event, iPieza) => {
-      const value = Number(event.target.value);
-      cotizacion.piezas[iPieza].perfiles.forEach((perfil) => {
-        perfil.medida = value;
-      });
+    const coloresPerfilDisponibles = (iPieza) => {
+      const medidaPerfil = cotizacion.piezas[iPieza].perfiles.medida;
+      const coloresDisponibles =
+        materialesFormat.value.ventana.perfil
+          ?.filter((item) => item.medida == medidaPerfil)
+          .map((item) => item.color) || [];
+
+      return [...new Set(coloresDisponibles)];
     };
 
-    const cambiarColorPerfiles = (event, iPieza) => {
-      const value = event.target.value;
-      cotizacion.piezas[iPieza].perfiles.forEach((perfil) => {
-        perfil.color = value;
-      });
-    };
-
-    const agregarPieza = (pieza) => {
-      switch (pieza) {
-        case "ventana":
-          cotizacion.piezas.push({
-            pieza: "ventana",
-            perfiles: PERFILES.map((perfil) => ({
-              material: perfil,
-              medida: optionsDisponibles.value.medidasPerfil[0] || 2,
-              color: optionsDisponibles.value.coloresPerfil[0] || "blanco",
-            })),
-          });
-          break;
-      }
-
-      //limpiar form
-      resetFormaNuevaPieza();
+    const vidrioDisponibles = (iPieza) => {
+      const medidaVidrio = cotizacion.piezas[iPieza].vidrio.medida;
+      const vidriosDisponibles = materialesFormat.value.ventana.vidrio?.filter(
+        (item) => item.medida == medidaVidrio,
+      );
+      return vidriosDisponibles;
     };
 
     // Lifecycle hooks
     onMounted(async () => {
       await cargarMaterialesDB();
-      agregarPieza("ventana");
+      // agregarPieza("ventana");
       // await reiniciarSelects();
     });
 
@@ -106,8 +124,9 @@ createApp({
       // isVentanaSelected,
       cotizacion,
       optionsDisponibles,
-      agregarPieza,
-      cambiarMedidaPerfiles,
+      materialesFormat,
+      coloresPerfilDisponibles,
+      vidrioDisponibles,
     };
   },
 }).mount("#app");

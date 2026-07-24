@@ -18,127 +18,107 @@
     <div id="app" class="container">
       <h1 class="text-center">Cotización</h1>
       <div class="row">
-        <div class="col-12 col-md-4 border">
-          <form
-            class="p-3 border"
-            @submit.prevent="agregarPieza(formNuevaPieza)"
-          >
-            <div class="mb-3">
-              <label class="form-label">Nueva pieza</label>
-              <select v-model="formNuevaPieza" class="form-control">
-                <option value="" disabled>Selecciona pieza</option>
-                <option
-                  v-for="pieza in optionsDisponibles.piezas"
-                  :key="pieza"
-                  :value="pieza"
+        <div class="col"></div>
+        <div class="col-12 col-md-8 border">
+          <form class="border p-3">
+            <div
+              v-for="(pieza, iPieza) in cotizacion.piezas"
+              :key="iPieza"
+              class="row"
+            >
+              <div class="col-12 mb-3">
+                <label class="form-label">Pieza</label>
+                <select
+                  v-model="cotizacion.piezas[iPieza].pieza"
+                  class="form-select form-select-sm"
                 >
-                  {{ pieza }}
-                </option>
-              </select>
+                  <option value="ventana">Ventana</option>
+                </select>
+              </div>
+              <template v-if="pieza.pieza === 'ventana'">
+                <div class="col-6 mb-3">
+                  <label class="form-label">Ancho (cm)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    v-model="cotizacion.piezas[iPieza].medidas.ancho"
+                    class="form-control form-control-sm"
+                  />
+                </div>
+                <div class="col-6 mb-3">
+                  <label class="form-label">Alto (cm)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    v-model="cotizacion.piezas[iPieza].medidas.alto"
+                    class="form-control form-control-sm"
+                  />
+                </div>
+                <div class="col-6 mb-3">
+                  <label class="form-label">Medida Perfiles (in)</label>
+                  <select
+                    v-model="cotizacion.piezas[iPieza].perfiles.medida"
+                    class="form-control form-control-sm"
+                  >
+                    <option
+                      v-for="medida in optionsDisponibles.ventana.perfil.medidas"
+                      :key="medida"
+                      :value="medida"
+                    >
+                      {{ medida }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-6 mb-3">
+                  <label class="form-label">Color Perfiles</label>
+                  <select
+                    v-model="cotizacion.piezas[iPieza].perfiles.color"
+                    class="form-control form-control-sm"
+                  >
+                    <option
+                      v-for="color in coloresPerfilDisponibles(iPieza)"
+                      :key="color"
+                      :value="color"
+                    >
+                      {{ color }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-6 mb-3">
+                  <label class="form-label">Medida vidrio (mm)</label>
+                  <select
+                    v-model="cotizacion.piezas[iPieza].vidrio.medida"
+                    class="form-control form-control-sm"
+                  >
+                    <option
+                      v-for="medida in optionsDisponibles.ventana.vidrio.medidas"
+                      :key="medida"
+                      :value="medida"
+                    >
+                      {{ medida }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-6 mb-3">
+                  <label class="form-label">Vidrio</label>
+                  <select
+                    v-model="cotizacion.piezas[iPieza].vidrio.id"
+                    class="form-control form-control-sm"
+                  >
+                    <option
+                      v-for="vidrio in vidrioDisponibles(iPieza)"
+                      :key="vidrio.id"
+                      :value="vidrio.id"
+                    >
+                      {{ vidrio.material }}
+                    </option>
+                  </select>
+                </div>
+              </template>
             </div>
-            <!-- <div v-if="isVentanaSelected" class="mb-3">
-              <label class="form-label">Medida perfil (in)</label>
-              <select
-                v-model="formNuevaPieza.medidaPerfil"
-                class="form-control"
-              >
-                <option value="" disabled>Selecciona medida</option>
-                <option
-                  v-for="medida in optionsDisponibles.medidasPerfil"
-                  :key="medida"
-                  :value="medida"
-                >
-                  {{ medida }}
-                </option>
-              </select>
-            </div> -->
-            <button class="btn btn-outline-secondary w-100">Agregar +</button>
           </form>
         </div>
-        <div class="col-12 col-md-8 border">
-          <section
-            v-for="(pieza, iPieza) in cotizacion.piezas"
-            :key="`${pieza.pieza}_${iPieza}`"
-            class="border"
-          >
-            <h4 class="mb-0 text-center border">{{ pieza.pieza }}</h4>
-            <form>
-              <template v-if="pieza.pieza === 'ventana'">
-                <section class="border">
-                  <h5 class="mb-0 border">Perfiles</h5>
-                  <div class="row">
-                    <div class="col-4 mb-2"></div>
-                    <div class="col-4 mb-2">Pulgadas</div>
-                    <div class="col-4 mb-2">Color</div>
-                    <div class="col-4 mb-2"></div>
-                    <div class="col-4 mb-2">
-                      <select
-                        @change="cambiarMedidaPerfiles($event, iPieza)"
-                        class="form-control form-control-sm"
-                      >
-                        <option
-                          v-for="medida in optionsDisponibles.medidasPerfil"
-                          :key="medida"
-                          :value="medida"
-                        >
-                          {{ medida }}
-                        </option>
-                      </select>
-                    </div>
-                    <div class="col-4 mb-2">
-                      <select
-                        @change="cambiarColorPerfiles($event, iPieza)"
-                        class="form-control form-control-sm"
-                      >
-                        <option
-                          v-for="color in optionsDisponibles.coloresPerfil"
-                          :key="color"
-                          :value="color"
-                        >
-                          {{ color }}
-                        </option>
-                      </select>
-                    </div>
-                    <template
-                      v-for="(perfil, iPerfil) in pieza.perfiles"
-                      :key="perfil.material"
-                    >
-                      <div class="col-4 mb-2">{{ perfil.material }}</div>
-                      <div class="col-4 mb-2">
-                        <select
-                          v-model="cotizacion.piezas[iPieza].perfiles[iPerfil].medida"
-                          class="form-control form-control-sm"
-                        >
-                          <option
-                            v-for="medida in optionsDisponibles.medidasPerfil"
-                            :key="medida"
-                            :value="medida"
-                          >
-                            {{ medida }}
-                          </option>
-                        </select>
-                      </div>
-                      <div class="col-4 mb-2">
-                        <select
-                          v-model="cotizacion.piezas[iPieza].perfiles[iPerfil].color"
-                          class="form-control form-control-sm"
-                        >
-                          <option
-                            v-for="color in optionsDisponibles.coloresPerfil"
-                            :key="color"
-                            :value="color"
-                          >
-                            {{ color }}
-                          </option>
-                        </select>
-                      </div>
-                    </template>
-                  </div>
-                </section>
-              </template>
-            </form>
-          </section>
-        </div>
+        <div class="col"></div>
       </div>
     </div>
 

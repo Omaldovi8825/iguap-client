@@ -28,9 +28,9 @@ export async function fetchMateriales() {
 
     return obj;
   });
-  if (MODE_DEV) {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-  }
+
+  localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+
   return data;
 }
 
@@ -53,4 +53,21 @@ export const formatPrecios = (materiales) => {
     }
     return item;
   });
+};
+
+export const formatMMateriales = (materialesDB) => {
+  const mat = {
+    ventana: {},
+  };
+
+  for (const item of materialesDB) {
+    if (item.pieza === "ventana") {
+      if (!mat.ventana[item.categoria]) {
+        mat.ventana[item.categoria] = [];
+      }
+      mat.ventana[item.categoria].push(item);
+    }
+  }
+
+  return mat;
 };
