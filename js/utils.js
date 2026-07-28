@@ -71,3 +71,132 @@ export const formatMMateriales = (materialesDB) => {
 
   return mat;
 };
+
+export const ajustesMedidas = {
+  ventana: {
+    riel: {
+      pulgadas: {
+        2: {
+          chambrana: {
+            alto: {
+              resta: 2.7,
+            },
+          },
+          zoclo: {
+            ancho: {
+              resta: 16.2,
+              division: 2,
+            },
+          },
+          traslape: [
+            {
+              alto: {
+                resta: 3.2,
+              },
+            },
+            {
+              alto: {
+                resta: 4.1,
+              },
+            },
+          ],
+          cerco: [
+            {
+              alto: {
+                resta: 3.2,
+              },
+            },
+            {
+              alto: {
+                resta: 4.1,
+              },
+            },
+          ],
+          vidrio: [
+            {
+              ancho: {
+                resta: 16.2,
+                division: 2,
+                suma: 1.6,
+              },
+              alto: {
+                resta: 8.7,
+              },
+            },
+            {
+              ancho: {
+                resta: 16.2,
+                division: 2,
+                suma: 1.6,
+              },
+              alto: {
+                resta: 9.6,
+              },
+            },
+          ],
+        },
+        3: {
+          chambrana: {
+            alto: {
+              resta: 2.7,
+            },
+          },
+          zoclo: {
+            ancho: {
+              resta: 18,
+              division: 2,
+            },
+          },
+          traslape: [
+            {
+              alto: {
+                resta: 3.2,
+              },
+            },
+            {
+              alto: {
+                resta: 4.1,
+              },
+            },
+          ],
+          cerco: [
+            {
+              alto: {
+                resta: 3.2,
+              },
+            },
+            {
+              alto: {
+                resta: 4.1,
+              },
+            },
+          ],
+          vidrio: [
+            {
+              ancho: {
+                resta: 18,
+                division: 2,
+                suma: 2,
+              },
+              alto: {
+                resta: 13.2,
+              },
+            },
+            {
+              ancho: {
+                resta: 18,
+                division: 2,
+                suma: 2,
+              },
+              alto: {
+                resta: 14.1,
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+};
+
+export const cmAm = (cm) => cm / 100;
