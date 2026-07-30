@@ -11,379 +11,52 @@
       integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
       crossorigin="anonymous"
     />
+    <!-- Bootstrap icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+    />
+    <!-- custom CSS -->
+    <link rel="stylesheet" href="./css/main.css" />
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   </head>
   <body>
-    <div id="app" class="container">
-      <h1 class="text-center">Cotización</h1>
+    <div id="app" v-cloak class="container">
       <div class="row">
         <div class="col"></div>
-        <div class="col-12 col-md-8 border">
-          <form>
-            <div
-              v-for="(pieza, iPieza) in cotizacion.piezas"
-              :key="iPieza"
-              class="row border"
+        <div class="col-12 col-md-6">
+          <h1 class="text-center fs-2">Iguapp</h1>
+          <div class="mb-3">
+            <a
+              href="./nueva-formula.html"
+              class="btn btn-outline-primary btn-sm w-100"
             >
-              <div class="col-12 mb-3">
-                <label class="form-label">Pieza</label>
-                <select
-                  v-model="cotizacion.piezas[iPieza].pieza"
-                  class="form-select form-select-sm"
-                >
-                  <option value="ventana">Ventana</option>
-                </select>
-              </div>
-              <template v-if="pieza.pieza === 'ventana'">
-                <div class="col-6 mb-3">
-                  <label class="form-label">Ancho (cm)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    v-model="cotizacion.piezas[iPieza].medidas.ancho"
-                    class="form-control form-control-sm"
-                  />
-                </div>
-                <div class="col-6 mb-3">
-                  <label class="form-label">Alto (cm)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    v-model="cotizacion.piezas[iPieza].medidas.alto"
-                    class="form-control form-control-sm"
-                  />
-                </div>
-                <div class="col-12">
-                  <label class="form-label">Perfiles</label>
-                </div>
-                <div class="col-6 mb-3">
-                  <label class="form-label">(in)</label>
-                  <select
-                    v-model="cotizacion.piezas[iPieza].perfiles.medida"
-                    class="form-control form-control-sm"
+              Nueva fórmula
+              <i class="bi bi-calculator"></i>
+            </a>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th colspan="2">Fórmulas guardadas</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="formula in formulasDb" :key="formula.id">
+                <td>{{ formula.nombre }}</td>
+                <td>
+                  <a
+                    :href="`./formula.html?id=${formula._id}`"
+                    class="btn btn-outline-primary btn-sm"
                   >
-                    <option
-                      v-for="medida in optionsDisponibles.ventana.perfil.medidas"
-                      :key="medida"
-                      :value="medida"
-                    >
-                      {{ medida }}
-                    </option>
-                  </select>
-                </div>
-                <div class="col-6 mb-3">
-                  <label class="form-label">Color</label>
-                  <select
-                    v-model="cotizacion.piezas[iPieza].perfiles.color"
-                    class="form-control form-control-sm"
-                  >
-                    <option
-                      v-for="color in coloresPerfilDisponibles(iPieza)"
-                      :key="color"
-                      :value="color"
-                    >
-                      {{ color }}
-                    </option>
-                  </select>
-                </div>
-                <div class="col-12">
-                  <label class="form-label">Vidrio</label>
-                </div>
-                <div class="col-6 mb-3">
-                  <label class="form-label">(mm)</label>
-                  <select
-                    v-model="cotizacion.piezas[iPieza].vidrio.medida"
-                    class="form-control form-control-sm"
-                  >
-                    <option
-                      v-for="medida in optionsDisponibles.ventana.vidrio.medidas"
-                      :key="medida"
-                      :value="medida"
-                    >
-                      {{ medida }}
-                    </option>
-                  </select>
-                </div>
-                <div class="col-6 mb-3">
-                  <label class="form-label">Modelo</label>
-                  <select
-                    v-model="cotizacion.piezas[iPieza].vidrio.id"
-                    class="form-control form-control-sm"
-                  >
-                    <option
-                      v-for="vidrio in vidrioDisponibles(iPieza)"
-                      :key="vidrio.id"
-                      :value="vidrio.id"
-                    >
-                      {{ vidrio.material }}
-                    </option>
-                  </select>
-                </div>
-                <div class="col-12">
-                  <label class="form-label">Carretillas</label>
-                </div>
-                <div class="col-3 mb-3">
-                  <label class="form-label">(in)</label>
-                  <select
-                    v-model="cotizacion.piezas[iPieza].carretillas.medida"
-                    class="form-control form-control-sm"
-                  >
-                    <option
-                      v-for="medida in optionsDisponibles.ventana.carretilla.medidas"
-                      :key="medida"
-                      :value="medida"
-                    >
-                      {{ medida }}
-                    </option>
-                  </select>
-                </div>
-                <div class="col-3 mb-3">
-                  <label class="form-label">Cantidad</label>
-                  <input
-                    type="number"
-                    step="1"
-                    v-model="cotizacion.piezas[iPieza].carretillas.cantidad"
-                    class="form-control form-control-sm"
-                  />
-                </div>
-                <div class="col-6 mb-3">
-                  <label class="form-label">Modelo</label>
-                  <select
-                    v-model="cotizacion.piezas[iPieza].carretillas.id"
-                    class="form-control form-control-sm"
-                  >
-                    <option
-                      v-for="carretilla in carretillaDisponibles(iPieza)"
-                      :key="carretilla.id"
-                      :value="carretilla.id"
-                    >
-                      {{ carretilla.material }}
-                    </option>
-                  </select>
-                </div>
-                <div class="col-12">
-                  <label class="form-label">Jaladeras</label>
-                </div>
-                <div class="col-6 mb-3">
-                  <label class="form-label">Cantidad</label>
-                  <input
-                    type="number"
-                    step="1"
-                    v-model="cotizacion.piezas[iPieza].jaladeras.cantidad"
-                    class="form-control form-control-sm"
-                  />
-                </div>
-                <div class="col-6 mb-3">
-                  <label class="form-label">Modelo</label>
-                  <select
-                    v-model="cotizacion.piezas[iPieza].jaladeras.id"
-                    class="form-control form-control-sm"
-                  >
-                    <option
-                      v-for="jaladera in materialesFormat.ventana.jaladera"
-                      :key="jaladera.id"
-                      :value="jaladera.id"
-                    >
-                      {{ jaladera.material }}
-                    </option>
-                  </select>
-                </div>
-                <div class="col-12">
-                  <label class="form-label">Vinil (empaque)</label>
-                </div>
-                <div class="col-6 mb-3">
-                  <label class="form-label">(cm)</label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    v-model="cotizacion.piezas[iPieza].vinil.medida"
-                    class="form-control form-control-sm"
-                  />
-                </div>
-                <div class="col-6 mb-3">
-                  <label class="form-label">Modelo</label>
-                  <select
-                    v-model="cotizacion.piezas[iPieza].vinil.id"
-                    class="form-control form-control-sm"
-                  >
-                    <option
-                      v-for="vinil in materialesFormat.ventana.vinil"
-                      :key="vinil.id"
-                      :value="vinil.id"
-                    >
-                      {{ vinil.material }}
-                    </option>
-                  </select>
-                </div>
-                <div class="col-6 mb-3">
-                  <label class="form-label">Silicón ($)</label>
-                  <input
-                    type="number"
-                    step="0.5"
-                    v-model="cotizacion.piezas[iPieza].silicon"
-                    class="form-control form-control-sm"
-                  />
-                </div>
-                <div class="col-6 mb-3"></div>
-                <div class="col-12">
-                  <hr class="border-primary border-2" />
-                </div>
-                <div class="col-6 mb-3">
-                  <label>Mosquitero</label>
-                </div>
-                <div class="col-6 mb-3">
-                  <div class="form-check form-switch">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      v-model="cotizacion.piezas[iPieza].mosquitero.hay"
-                    />
-                  </div>
-                </div>
-                <template v-if="pieza.mosquitero.hay">
-                  <div class="col-6 mb-3">
-                    <label class="form-label">Tipo</label>
-                    <select
-                      v-model="cotizacion.piezas[iPieza].mosquitero.tipo"
-                      class="form-select form-select-sm"
-                    >
-                      <option value="fijo">Fijo</option>
-                      <option value="corredizo">Corredizo</option>
-                    </select>
-                  </div>
-                </template>
-                <div class="col-12">
-                  <hr class="border-primary border-2" />
-                </div>
-                <div class="col-6 mb-3">Mostrar desglose</div>
-                <div class="col-6 mb-3">
-                  <div class="form-check form-switch">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      v-model="cotizacion.piezas[iPieza].desglose.show"
-                    />
-                  </div>
-                </div>
-                <div v-if="pieza.desglose.show" class="col-12">
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th colspan="2" class="text-center">Ventana</th>
-                      </tr>
-                      <tr>
-                        <th>Material</th>
-                        <th>Precio</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr
-                        v-for="([llave, valor], iMaterial) in Object.entries(desgloseCotizacion.piezas[iPieza].ventana)"
-                        :key="`key-${index}_${iMaterial}`"
-                      >
-                        <td>{{ llave }}</td>
-                        <td>{{ formatMoney(valor) }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div class="col-12">
-                  <hr class="border-primary border-2" />
-                </div>
-                <div class="col-6 mb-3">Mostrar medidas</div>
-                <div class="col-6 mb-3">
-                  <div class="form-check form-switch">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      v-model="cotizacion.piezas[iPieza].formulaMedidas.show"
-                    />
-                  </div>
-                </div>
-                <div v-if="pieza.formulaMedidas.show" class="col-12">
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th colspan="2" class="text-center">Ventana</th>
-                      </tr>
-                      <tr>
-                        <th>Cantidad</th>
-                        <th>Material</th>
-                        <th>Medida</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr
-                        v-for="(medida, iMaterial) in medidasConFormula[iPieza]"
-                        :key="`key-${medida.material}_${iMaterial}`"
-                      >
-                        <td>{{ medida.cantidad }}</td>
-                        <td>{{ medida.material }}</td>
-                        <td>{{ medida.medida.ancho || medida.medida.alto }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </template>
-            </div>
-            <div class="row border">
-              <div class="col-12 mb-3">
-                <!-- <hr class="border-primary border-2" /> -->
-                <h4 class="mb-0">Mano de obra</h4>
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Porcentaje (%)</label>
-                <input
-                  type="number"
-                  step="1"
-                  v-model="cotizacion.manoObra.porcentaje"
-                  class="form-control form-control-sm"
-                />
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Extras ($)</label>
-                <input
-                  type="number"
-                  step="0.5"
-                  v-model="cotizacion.extras"
-                  class="form-control form-control-sm"
-                />
-              </div>
-            </div>
-            <!-- <div>
-              <button class="btn btn-outline-secondary w-100">Calcular</button>
-            </div> -->
-          </form>
-          <section class="border">
-            <h4>Desglose</h4>
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Concepto</th>
-                  <th>Precio</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Piezas</td>
-                  <td>{{ formatMoney(desgloseCotizacion.totalPiezas) }}</td>
-                </tr>
-                <tr>
-                  <td>Manode de obra</td>
-                  <td>{{ formatMoney(desgloseCotizacion.totalManoObra) }}</td>
-                </tr>
-                <tr>
-                  <td>Extras</td>
-                  <td>{{ formatMoney(desgloseCotizacion.totalExtras) }}</td>
-                </tr>
-                <tr>
-                  <td>Total</td>
-                  <td>{{ formatMoney(desgloseCotizacion.total) }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
+                    Cotizar
+                    <i class="bi bi-coin"></i>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <div class="col"></div>
       </div>

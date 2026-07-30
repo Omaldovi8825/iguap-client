@@ -3,15 +3,21 @@ const { createApp, ref, onMounted, reactive, watch, computed, nextTick } = Vue;
 
 createApp({
   setup() {
-    const formulasDb = ref([]);
+    const formulaDb = ref([]);
 
     //Methods
-    const getFormulas = async () => {
+    const getFormula = async () => {
       try {
-        const response = await Axiomi.get("formulas");
+        const urlParams = new URLSearchParams(window.location.search);
+        const formulaId = urlParams.get("id");
+        if (!formulaId) {
+          console.error("No se proporcionó un ID de fórmula en la URL.");
+          return;
+        }
+        const response = await Axiomi.get(`formulas/${formulaId}`);
         const { error, data } = await response.json();
         if (!error) {
-          formulasDb.value = data;
+          formulaDb.value = data;
         }
       } catch (error) {
         console.error("Error al obtener las fórmulas:", error);
@@ -20,11 +26,11 @@ createApp({
 
     // Lifecycle hooks
     onMounted(async () => {
-      await getFormulas();
+      await getFormula();
     });
 
     return {
-      formulasDb,
+      formulaDb,
     };
   },
 }).mount("#app");
