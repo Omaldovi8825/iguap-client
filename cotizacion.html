@@ -26,59 +26,61 @@
   </head>
   <body>
     <div id="app" v-cloak class="container">
-      <h1 class="text-center fs-2">Nueva cotización</h1>
+      <h1 class="text-center fs-2 mb-3">Nueva cotización</h1>
       <div class="row">
-        <div class="col-12 col-md-4 bg-light rounded-3 py-3 mb-3">
-          <form-material
-            :materiales-db="materialesDB"
-            @agregar="agregarMaterial"
-          />
-        </div>
-        <div class="col">
-          <form>
-            <div class="row">
-              <div class="col-6 mb-3">
-                <label class="form-label">Ancho (cm)</label>
-                <input
-                  type="number"
-                  step="0.5"
-                  min="0.5"
-                  class="form-control form-control-sm"
-                  v-model="formCotizacion.ancho"
-                />
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Alto (cm)</label>
-                <input
-                  type="number"
-                  step="1"
-                  min="1"
-                  class="form-control form-control-sm"
-                  v-model="formCotizacion.alto"
-                />
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Mano de obra (%)</label>
-                <input
-                  type="number"
-                  step="0.5"
-                  min="0.5"
-                  class="form-control form-control-sm"
-                  v-model="formCotizacion.manoObra"
-                />
-              </div>
-              <div class="col-6 mb-3">
-                <label class="form-label">Extras ($)</label>
-                <input
-                  type="number"
-                  step="0.5"
-                  min="0.5"
-                  class="form-control form-control-sm"
-                  v-model="formCotizacion.extras"
-                />
-              </div>
+        <div class="col-12 col-md-4 mb-3">
+          <form class="row">
+            <div class="col-6 mb-3">
+              <label class="form-label">Ancho (cm)</label>
+              <input
+                type="number"
+                step="0.5"
+                min="0.5"
+                class="form-control form-control-sm"
+                v-model="formCotizacion.ancho"
+              />
+            </div>
+            <div class="col-6 mb-3">
+              <label class="form-label">Alto (cm)</label>
+              <input
+                type="number"
+                step="1"
+                min="1"
+                class="form-control form-control-sm"
+                v-model="formCotizacion.alto"
+              />
+            </div>
+            <div class="col-6 mb-3">
+              <label class="form-label">Mano de obra (%)</label>
+              <input
+                type="number"
+                step="0.5"
+                min="0.5"
+                class="form-control form-control-sm"
+                v-model="formCotizacion.manoObra"
+              />
+            </div>
+            <div class="col-6 mb-3">
+              <label class="form-label">Extras ($)</label>
+              <input
+                type="number"
+                step="0.5"
+                min="0.5"
+                class="form-control form-control-sm"
+                v-model="formCotizacion.extras"
+              />
             </div>
           </form>
+          <div class="row bg-secondary-subtle py-3 rounded">
+            <div class="col-12">
+              <form-material
+                :materiales-db="materialesDB"
+                @agregar="agregarMaterial"
+              ></form-material>
+            </div>
+          </div>
+        </div>
+        <div class="col">
           <div class="table-responsive">
             <table class="table table-sm">
               <thead>
