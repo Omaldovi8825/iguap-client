@@ -24,6 +24,7 @@ const app = createApp({
       materiales: [],
     });
     const materialesDB = ref([]);
+    const isLoading = ref(false);
 
     // computed properties
     const cotizacion = computed(() => {
@@ -94,10 +95,12 @@ const app = createApp({
 
     // Lifecycle hooks
     onMounted(async () => {
+      isLoading.value = true;
       await getMateriales();
       if (id_cotizacion) {
         await getFormula();
       }
+      isLoading.value = false;
     });
 
     const getFormula = async () => {
@@ -116,6 +119,7 @@ const app = createApp({
 
     return {
       heading,
+      isLoading,
       materialesDB,
       formCotizacion,
       cotizacion,
