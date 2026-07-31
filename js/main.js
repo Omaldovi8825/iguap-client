@@ -1,7 +1,7 @@
 import { Axiomi } from "./api.js";
 const { createApp, ref, onMounted, reactive, watch, computed, nextTick } = Vue;
 
-createApp({
+const app = createApp({
   setup() {
     const formulasDb = ref([]);
 
@@ -27,4 +27,34 @@ createApp({
       formulasDb,
     };
   },
-}).mount("#app");
+});
+
+app.component("new-formula", {
+  template: `
+    <div class="mb-3">
+      <a
+        href="./nueva-formula.html"
+        class="btn btn-outline-primary btn-sm w-100"
+      >
+        Nueva fórmula
+        <i class="bi bi-calculator"></i>
+      </a>
+    </div>
+  `,
+});
+
+app.component("new-cotizacion", {
+  template: `
+    <div class="mb-3">
+      <a
+        href="./cotizacion.html"
+        class="btn btn-outline-primary btn-sm w-100"
+      >
+        Nueva cotización
+        <i class="bi bi-coin"></i>
+      </a>
+    </div>
+  `,
+});
+
+app.mount("#app");

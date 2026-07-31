@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iguapp</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <!-- Bootstrap icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+    />
+    <!-- custom CSS -->
+    <link rel="stylesheet" href="./css/main.css" />
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  </head>
+  <body>
+    <div id="app" v-cloak class="container">
+      <h1 class="text-center fs-2">Nueva cotización</h1>
+      <div class="row">
+        <div class="col-12 col-md-4 bg-light rounded-3 py-3 mb-3">
+          <form-material
+            :materiales-db="materialesDB"
+            @agregar="agregarMaterial"
+          />
+        </div>
+        <div class="col">
+          <form>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label class="form-label">Ancho (cm)</label>
+                <input
+                  type="number"
+                  step="0.5"
+                  min="0.5"
+                  class="form-control form-control-sm"
+                  v-model="formCotizacion.ancho"
+                />
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label">Alto (cm)</label>
+                <input
+                  type="number"
+                  step="1"
+                  min="1"
+                  class="form-control form-control-sm"
+                  v-model="formCotizacion.alto"
+                />
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label">Mano de obra (%)</label>
+                <input
+                  type="number"
+                  step="0.5"
+                  min="0.5"
+                  class="form-control form-control-sm"
+                  v-model="formCotizacion.manoObra"
+                />
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label">Extras ($)</label>
+                <input
+                  type="number"
+                  step="0.5"
+                  min="0.5"
+                  class="form-control form-control-sm"
+                  v-model="formCotizacion.extras"
+                />
+              </div>
+            </div>
+          </form>
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th colspan="7">Materiales</th>
+                </tr>
+                <tr>
+                  <th>#id</th>
+                  <th>Nombre</th>
+                  <th>Cantidad</th>
+                  <th>Fórmula</th>
+                  <th>Medida</th>
+                  <th>Precio</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(material, index) in cotizacion.materiales"
+                  :key="material.id"
+                >
+                  <td>{{ material.id }}</td>
+                  <td>{{ material.nombre }}</td>
+                  <td>{{ material.cantidad }}</td>
+                  <td>{{ material.formula }}</td>
+                  <td>{{ material.medida }}</td>
+                  <td>{{ formatMoney(material.precio) }}</td>
+                  <td>
+                    <button
+                      type="button"
+                      class="btn btn-outline-danger btn-sm"
+                      @click="eliminarMaterial(index)"
+                    >
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th colspan="2">Desglose</th>
+                </tr>
+                <tr>
+                  <th>Concepto</th>
+                  <th>Costo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Materiales</td>
+                  <td>{{ formatMoney(cotizacion.desglose.materiales) }}</td>
+                </tr>
+                <tr>
+                  <td>Mano de obra</td>
+                  <td>{{ formatMoney(cotizacion.desglose.manoObra) }}</td>
+                </tr>
+                <tr>
+                  <td>Extras</td>
+                  <td>{{ formatMoney(cotizacion.desglose.extras) }}</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Total</td>
+                  <td class="fw-bold">
+                    {{ formatMoney(cotizacion.desglose.total) }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./js/cotizacion.js" type="module"></script>
+  </body>
+</html>
