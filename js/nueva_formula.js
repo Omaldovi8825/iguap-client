@@ -1,20 +1,13 @@
 import { Axiomi } from "./api.js";
-import { fetchMateriales } from "./utils.js";
+import { fetchMateriales, formatNombreTabla, formatFormula } from "./utils.js";
+import FormMaterial from "./components/form_material.js";
 const { createApp, ref, onMounted, reactive, watch, computed, nextTick } = Vue;
 
-createApp({
+const app = createApp({
   setup() {
     const isLoading = ref(false);
     const materialesDB = ref([]);
-    const formMaterial = ref({
-      id: "",
-      cantidad: 1,
-      formulas: {
-        show: false,
-        ancho: "",
-        alto: "",
-      },
-    });
+
     const nuevaFormula = reactive({
       nombre: "",
       materiales: [],
@@ -40,79 +33,64 @@ createApp({
           (m) => m.id === Number(material.id),
         );
         return {
-          ...material,
-          ...materialDB,
+          id: material.id,
+          nombre: formatNombreTabla(materialDB),
+          cantidad: material.cantidad,
+          formula: formatFormula(material.formulas),
         };
       });
     });
 
     // Methods
-    const agregarMaterial = () => {
-      nuevaFormula.materiales.push({
-        ...formMaterial.value,
-        id: Number(formMaterial.value.id),
-        formulas: {
-          ancho: formMaterial.value.formulas.ancho,
-          alto: formMaterial.value.formulas.alto,
-        },
-      });
-
-      resetFormMaterial();
+    const agregarMaterial = (material) => {
+      nuevaFormula.materiales.push(material);
     };
 
-    const eliminarMaterial = (id) => {
-      nuevaFormula.materiales = nuevaFormula.materiales.filter(
-        (material) => material.id !== id,
-      );
+    const eliminarMaterial = (idex) => {
+      nuevaFormula.materiales.splice(idex, 1);
     };
 
     const guardarFormula = async () => {
+      if (!nuevaFormula.nombre.trim()) {
+        alert("asigna el nombre de la fórmula");
+        return;
+      }
+
+      if (nuevaFormula.materiales.length === 0) {
+        alert("agrega al menos un material");
+        return;
+      }
+
+      isLoading.value = true;
       try {
-        const req = await Axiomi.post("formula", nuevaFormula);
+        const req = await Axiomi.post("formulas", nuevaFormula);
         const res = await req.json();
         console.log("Formula guardada:", res);
+        location.href = "./";
       } catch (error) {
         console.error(error);
+      } finally {
+        isLoading.value = false;
       }
-    };
-
-    const resetFormMaterial = () => {
-      formMaterial.value = {
-        id: "",
-        cantidad: 1,
-        formulas: {
-          show: false,
-          ancho: "",
-          alto: "",
-        },
-      };
     };
 
     // Lifecycle hooks
     onMounted(async () => {
       await cargarMaterialesDB();
-      // nuevaFormula.materiales.push({
-      //   id: 1,
-      //   cantidad: 1,
-      //   formula: {
-      //     tipo: "ancho",
-      //     formula: "-2",
-      //   },
-      // });
-      // const res = await Axiomi.get("formula");
-      // const data = await res.json();
-      // console.log("Formulas obtenidas:", data);
     });
 
     return {
       isLoading,
-      materialesDB,
-      formMaterial,
-      agregarMaterial,
-      eliminarMaterial,
       nuevaFormula,
       materialesFormula,
+      materialesDB,
+      agregarMaterial,
+      eliminarMaterial,
       guardarFormula,
     };
   },
-}).mount("#app");
+});
+
+app.component("form-material", FormMaterial);
+
+app.mount("#app");

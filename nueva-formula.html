@@ -25,74 +25,13 @@
     <div id="app" v-cloak class="container">
       <h1 class="text-center fs-3">Nueva fórmula</h1>
       <div class="row">
-        <div class="col-12 col-md-4 mb-3 border">
-          <form @submit.prevent="agregarMaterial">
-            <div class="mb-3">
-              <label class="form-label">Material</label>
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                v-model="formMaterial.id"
-                list="materiales-list"
-              />
-              <datalist id="materiales-list">
-                <option
-                  v-for="material in materialesDB"
-                  :key="material.id"
-                  :value="material.id"
-                >
-                  {{ material.categoria }} {{ material.material }} {{
-                  material.pieza }} {{ material.tipo }} {{ material.medida }}{{
-                  material.unidad }} {{ material.color }}
-                </option>
-              </datalist>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Cantidad</label>
-              <input
-                type="number"
-                min="1"
-                class="form-control form-control-sm"
-                v-model="formMaterial.cantidad"
-              />
-            </div>
-            <div class="mb-3">
-              <div class="form-check form-switch">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  role="switch"
-                  v-model="formMaterial.formulas.show"
-                />
-                <label class="form-check-label">Agregar fórmula</label>
-              </div>
-            </div>
-            <template v-if="formMaterial.formulas.show">
-              <div class="mb-3">
-                <label class="form-label">Ancho</label>
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  v-model="formMaterial.formulas.ancho"
-                />
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Alto</label>
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  v-model="formMaterial.formulas.alto"
-                />
-              </div>
-            </template>
-            <div>
-              <button class="btn btn-outline-secondary btn-sm w-100">
-                Agregar +
-              </button>
-            </div>
-          </form>
+        <div class="col-12 col-md-4 bg-secondary-subtle rounded-3 py-3 mb-3">
+          <form-material
+            :materiales-db="materialesDB"
+            @agregar="agregarMaterial"
+          ></form-material>
         </div>
-        <div class="col mb-3 border">
+        <div class="col mb-3">
           <form @submit.prevent="guardarFormula">
             <div class="mb-3">
               <label class="form-label">Nombre</label>
@@ -119,21 +58,13 @@
                     :key="index"
                   >
                     <td>{{ material.id }}</td>
-                    <td>
-                      {{ material.categoria }} {{ material.material }} {{
-                      material.pieza }} {{ material.tipo }} {{ material.medida
-                      }}{{ material.unidad }} {{ material.color}}
-                    </td>
+                    <td>{{ material.nombre }}</td>
                     <td>{{ material.cantidad }}</td>
-                    <td>
-                      {{ material.formulas.ancho && `Ancho
-                      ${material.formulas.ancho}` }} {{ material.formulas.alto
-                      && `Alto ${material.formulas.alto}`}}
-                    </td>
+                    <td>{{ material.formula }}</td>
                     <td>
                       <button
                         class="btn btn-sm btn-outline-danger"
-                        @click="eliminarMaterial(material.id)"
+                        @click="eliminarMaterial(index)"
                       >
                         <i class="bi bi-trash3"></i>
                       </button>
@@ -143,9 +74,16 @@
               </table>
             </div>
             <div>
-              <button class="btn btn-outline-secondary btn-sm w-100">
-                Guardar
-                <i class="bi bi-floppy"></i>
+              <button
+                class="btn btn-outline-secondary btn-sm w-100"
+                :disabled="isLoading"
+              >
+                <span
+                  v-if="isLoading"
+                  class="spinner-border spinner-border-sm"
+                  role="status"
+                ></span>
+                <span v-else>Guardar <i class="bi bi-floppy"></i></span>
               </button>
             </div>
           </form>

@@ -4,9 +4,11 @@ const { createApp, ref, onMounted, reactive, watch, computed, nextTick } = Vue;
 const app = createApp({
   setup() {
     const formulasDb = ref([]);
+    const isLoading = ref(false);
 
     //Methods
     const getFormulas = async () => {
+      isLoading.value = true;
       try {
         const response = await Axiomi.get("formulas");
         const { error, data } = await response.json();
@@ -15,6 +17,8 @@ const app = createApp({
         }
       } catch (error) {
         console.error("Error al obtener las fórmulas:", error);
+      } finally {
+        isLoading.value = false;
       }
     };
 
@@ -25,6 +29,7 @@ const app = createApp({
 
     return {
       formulasDb,
+      isLoading,
     };
   },
 });
