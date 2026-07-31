@@ -11,8 +11,11 @@ import {
 import FormMaterial from "./components/form_material.js";
 const { createApp, ref, onMounted, reactive, watch, computed, nextTick } = Vue;
 
+const id_cotizacion = new URLSearchParams(window.location.search).get("id");
+
 const app = createApp({
   setup() {
+    const heading = ref("Nueva cotización");
     const formCotizacion = reactive({
       ancho: "",
       alto: "",
@@ -20,7 +23,6 @@ const app = createApp({
       extras: "",
       materiales: [],
     });
-
     const materialesDB = ref([]);
 
     // computed properties
@@ -92,11 +94,28 @@ const app = createApp({
 
     // Lifecycle hooks
     onMounted(async () => {
-      // await getFormula();
       await getMateriales();
+      if (id_cotizacion) {
+        await getFormula();
+      }
     });
 
+    const getFormula = async () => {
+      try {
+        const response = await Axiomi.get(`formulas/${id_cotizacion}`);
+        const { error, data } = await response.json();
+        if (!error) {
+          heading.value = `Cotización: ${data.nombre}`;
+          formCotizacion.materiales = data.materiales;
+        }
+      } catch (error) {
+        console.error("Error al obtener la fórmula:", error);
+        alert("Error al obtener la fórmula");
+      }
+    };
+
     return {
+      heading,
       materialesDB,
       formCotizacion,
       cotizacion,
