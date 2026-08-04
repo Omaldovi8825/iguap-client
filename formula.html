@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="./css/main.css" />
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- <script src="./js/Vue.js"></script> -->
   </head>
   <body>
     <div id="app" v-cloak class="container">
@@ -30,7 +31,7 @@
         <a href="./" class="fs-4">
           <i class="bi bi-arrow-left-circle text-info"></i>
         </a>
-        <h1 class="text-center fs-2">Nueva fórmula</h1>
+        <h1 class="text-center fs-2">{{ heading }}</h1>
         <span></span>
       </div>
       <div class="row">
@@ -57,7 +58,11 @@
                     <th>#id</th>
                     <th>Material</th>
                     <th>Cantidad</th>
-                    <th>Fórmula</th>
+                    <template v-if="modoEdicion">
+                      <th>Fórmula ancho</th>
+                      <th>Fórmula alto</th>
+                    </template>
+                    <th v-else>Fórmula</th>
                     <th>Acciones</th>
                   </tr>
                 </thead>
@@ -69,11 +74,28 @@
                     <td>{{ material.id }}</td>
                     <td>{{ material.nombre }}</td>
                     <td>{{ material.cantidad }}</td>
-                    <td>{{ material.formula }}</td>
+                    <template v-if="modoEdicion">
+                      <td>
+                        <input
+                          type="text"
+                          class="form-control form-control-sm"
+                          v-model="nuevaFormula.materiales[index].formulas.ancho"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          class="form-control form-control-sm"
+                          v-model="nuevaFormula.materiales[index].formulas.alto"
+                        />
+                      </td>
+                    </template>
+                    <td v-else>{{ material.formula }}</td>
                     <td>
                       <button
                         class="btn btn-sm btn-outline-danger"
                         @click="eliminarMaterial(index)"
+                        type="button"
                       >
                         <i class="bi bi-trash3"></i>
                       </button>
@@ -100,6 +122,6 @@
       </div>
     </div>
 
-    <script src="./js/nueva_formula.js" type="module"></script>
+    <script src="./js/formula.js" type="module"></script>
   </body>
 </html>

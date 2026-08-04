@@ -10,13 +10,27 @@ const app = createApp({
     const getFormulas = async () => {
       isLoading.value = true;
       try {
-        const response = await Axiomi.get("formulas");
-        const { error, data } = await response.json();
+        const { error, data } = await Axiomi.get("formulas");
         if (!error) {
           formulasDb.value = data;
         }
       } catch (error) {
         console.error("Error al obtener las fórmulas:", error);
+      } finally {
+        isLoading.value = false;
+      }
+    };
+
+    const eliminarFormula = async (id) => {
+      isLoading.value = true;
+      try {
+        const response = await Axiomi.delete(`formulas/${id}`);
+        const { error, message } = await response.json();
+        if (!error) {
+          await getFormulas();
+        }
+      } catch (error) {
+        console.error("Error al eliminar la fórmula:", error);
       } finally {
         isLoading.value = false;
       }
@@ -30,6 +44,7 @@ const app = createApp({
     return {
       formulasDb,
       isLoading,
+      eliminarFormula,
     };
   },
 });
@@ -38,7 +53,7 @@ app.component("new-formula", {
   template: `
     <div class="mb-3">
       <a
-        href="./nueva-formula.html"
+        href="./formula.html"
         class="btn btn-outline-primary btn-sm w-100"
       >
         Nueva fórmula

@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="./css/main.css" />
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- <script src="./js/Vue.js"></script> -->
   </head>
   <body>
     <div id="app" v-cloak class="container">
@@ -49,11 +50,22 @@
                 <td class="text-end">
                   <a
                     :href="`./cotizacion.html?id=${formula._id}`"
-                    class="btn btn-outline-primary btn-sm"
+                    class="btn btn-outline-success btn-sm"
                   >
-                    Cotizar
                     <i class="bi bi-coin"></i>
                   </a>
+                  <a
+                    :href="`./formula.html?id=${formula._id}`"
+                    class="btn btn-outline-primary btn-sm ms-2"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <button
+                    @click="eliminarFormula(formula._id)"
+                    class="btn btn-outline-danger btn-sm ms-2"
+                  >
+                    <i class="bi bi-trash"></i>
+                  </button>
                 </td>
               </tr>
             </tbody>
