@@ -24,8 +24,7 @@ const app = createApp({
     const eliminarFormula = async (id) => {
       isLoading.value = true;
       try {
-        const response = await Axiomi.delete(`formulas/${id}`);
-        const { error, message } = await response.json();
+        const { error, message } = await Axiomi.delete(`formulas/${id}`);
         if (!error) {
           await getFormulas();
         }

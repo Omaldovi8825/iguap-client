@@ -85,37 +85,33 @@ const app = createApp({
     };
 
     const getMateriales = async () => {
-      try {
-        const materiales = await fetchMateriales();
-        materialesDB.value = materiales;
-      } catch (error) {
-        console.error("Error al obtener los materiales:", error);
+      const materiales = await fetchMateriales();
+      materialesDB.value = materiales;
+    };
+
+    const getFormula = async () => {
+      const { error, data } = await Axiomi.get(`formulas/${id_cotizacion}`);
+      if (!error) {
+        heading.value = `Cotización: ${data.nombre}`;
+        formCotizacion.materiales = data.materiales;
       }
     };
 
     // Lifecycle hooks
     onMounted(async () => {
-      isLoading.value = true;
-      await getMateriales();
-      if (id_cotizacion) {
-        await getFormula();
-      }
-      isLoading.value = false;
-    });
-
-    const getFormula = async () => {
       try {
-        const response = await Axiomi.get(`formulas/${id_cotizacion}`);
-        const { error, data } = await response.json();
-        if (!error) {
-          heading.value = `Cotización: ${data.nombre}`;
-          formCotizacion.materiales = data.materiales;
+        isLoading.value = true;
+        await getMateriales();
+        if (id_cotizacion) {
+          await getFormula();
         }
       } catch (error) {
-        console.error("Error al obtener la fórmula:", error);
-        alert("Error al obtener la fórmula");
+        alert("Error al obtener los datos de la cotización");
+        console.error("Error al obtener los datos", error);
+      } finally {
+        isLoading.value = false;
       }
-    };
+    });
 
     return {
       heading,
