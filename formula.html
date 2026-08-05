@@ -73,8 +73,14 @@
                   >
                     <td>{{ material.id }}</td>
                     <td>{{ material.nombre }}</td>
-                    <td>{{ material.cantidad }}</td>
                     <template v-if="modoEdicion">
+                      <td>
+                        <input
+                          type="text"
+                          class="form-control form-control-sm"
+                          v-model="nuevaFormula.materiales[index].cantidad"
+                        />
+                      </td>
                       <td>
                         <input
                           type="text"
@@ -90,7 +96,10 @@
                         />
                       </td>
                     </template>
-                    <td v-else>{{ material.formula }}</td>
+                    <template v-else>
+                      <td>{{ material.cantidad }}</td>
+                      <td>{{ material.formula }}</td>
+                    </template>
                     <td>
                       <button
                         class="btn btn-sm btn-outline-danger"
