@@ -9,6 +9,7 @@ import {
   formatNombreTabla,
 } from "./utils.js";
 import FormMaterial from "./components/form_material.js";
+import HeaderBack from "./components/headerBack.js";
 const { createApp, ref, onMounted, reactive, watch, computed, nextTick } = Vue;
 
 const id_cotizacion = new URLSearchParams(window.location.search).get("id");
@@ -128,5 +129,6 @@ const app = createApp({
 
 //Components
 app.component("form-material", FormMaterial);
+app.component("header-back", HeaderBack);
 
 app.mount("#app");

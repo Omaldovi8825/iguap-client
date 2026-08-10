@@ -1,6 +1,7 @@
 import { Axiomi } from "./api.js";
 import { fetchMateriales, formatNombreTabla, formatFormula } from "./utils.js";
 import FormMaterial from "./components/form_material.js";
+import HeaderBack from "./components/headerBack.js";
 const { createApp, ref, onMounted, reactive, watch, computed, nextTick } = Vue;
 
 const id_formula = new URLSearchParams(window.location.search).get("id");
@@ -125,5 +126,6 @@ const app = createApp({
 });
 
 app.component("form-material", FormMaterial);
+app.component("header-back", HeaderBack);
 
 app.mount("#app");

@@ -36,9 +36,9 @@ const app = createApp({
     };
 
     // Lifecycle hooks
-    onMounted(async () => {
-      await getFormulas();
-    });
+    // onMounted(async () => {
+    //   await getFormulas();
+    // });
 
     return {
       formulasDb,
@@ -48,32 +48,32 @@ const app = createApp({
   },
 });
 
-app.component("new-formula", {
-  template: `
-    <div class="mb-3">
-      <a
-        href="./formula.html"
-        class="btn btn-outline-primary btn-sm w-100"
-      >
-        Nueva fórmula
-        <i class="bi bi-calculator"></i>
-      </a>
-    </div>
-  `,
-});
+// app.component("new-formula", {
+//   template: `
+//     <div class="mb-3">
+//       <a
+//         href="./formula.html"
+//         class="btn btn-outline-primary btn-sm w-100"
+//       >
+//         Nueva fórmula
+//         <i class="bi bi-calculator"></i>
+//       </a>
+//     </div>
+//   `,
+// });
 
-app.component("new-cotizacion", {
-  template: `
-    <div class="mb-3">
-      <a
-        href="./cotizacion.html"
-        class="btn btn-outline-primary btn-sm w-100"
-      >
-        Nueva cotización
-        <i class="bi bi-coin"></i>
-      </a>
-    </div>
-  `,
-});
+// app.component("new-cotizacion", {
+//   template: `
+//     <div class="mb-3">
+//       <a
+//         href="./cotizacion.html"
+//         class="btn btn-outline-primary btn-sm w-100"
+//       >
+//         Nueva cotización
+//         <i class="bi bi-coin"></i>
+//       </a>
+//     </div>
+//   `,
+// });
 
 app.mount("#app");
