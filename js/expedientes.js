@@ -10,6 +10,11 @@ const app = createApp({
         error: "",
       },
     });
+    const search = ref("");
+    const folderToEdit = reactive({
+      id: null,
+      nombre: "",
+    });
     const isLoading = ref(false);
     const expedientes = ref([]);
 
@@ -50,6 +55,62 @@ const app = createApp({
       }
     };
 
+    const eliminarExpediente = async (id) => {
+      try {
+        const { error } = await Axiomi.delete(`expedientes/${id}`);
+        if (!error) {
+          await getExpedientes();
+        } else {
+          alert("Error al eliminar el expediente");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Error al eliminar el expediente");
+      }
+    };
+
+    const modoEdicion = (id) => {
+      folderToEdit.id = id;
+      folderToEdit.nombre = expedientes.value.find(
+        (expediente) => expediente._id === id,
+      ).nombre;
+    };
+
+    const limpiarFolderToEdit = () => {
+      folderToEdit.id = null;
+      folderToEdit.nombre = "";
+    };
+
+    const guardarEdicion = async () => {
+      try {
+        const { error } = await Axiomi.put(`expedientes/${folderToEdit.id}`, {
+          nombre: folderToEdit.nombre,
+        });
+        if (!error) {
+          await getExpedientes();
+          limpiarFolderToEdit();
+        } else {
+          alert("Error al guardar la edición");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Error al guardar la edición");
+      }
+    };
+
+    const cancelarEdicion = () => {
+      limpiarFolderToEdit();
+    };
+
+    //computed
+    const filteredExpedientes = computed(() => {
+      return expedientes.value.filter((expediente) => {
+        return expediente.nombre
+          .toLowerCase()
+          .includes(search.value.toLowerCase());
+      });
+    });
+
     //Life cycle
     onMounted(async () => {
       try {
@@ -65,9 +126,16 @@ const app = createApp({
 
     return {
       form,
+      search,
       expedientes,
       isLoading,
+      folderToEdit,
+      filteredExpedientes,
       createExpediente,
+      eliminarExpediente,
+      modoEdicion,
+      guardarEdicion,
+      cancelarEdicion,
     };
   },
 });

@@ -32,7 +32,7 @@
       <div class="row">
         <div class="col-12 col-md-4 mb-3">
           <form @submit.prevent="createExpediente">
-            <div class="input-group has-validation">
+            <div class="input-group has-validation mb-3">
               <input
                 type="text"
                 class="form-control"
@@ -56,39 +56,81 @@
               <div class="invalid-feedback">{{ form.nombre.error }}</div>
             </div>
           </form>
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+            <input
+              type="search"
+              class="form-control"
+              placeholder="Buscar expediente..."
+              v-model="search"
+            />
+          </div>
         </div>
         <div class="col mb-3">
           <div class="row">
             <div
-              class="col-6 col-md-4"
-              v-for="expediente in expedientes"
+              class="col-6 col-md-4 mb-3"
+              v-for="expediente in filteredExpedientes"
               :key="expediente._id"
             >
-              <a
-                :href="`./expediente.html?id=${expediente._id}`"
-                class="card text-decoration-none text-body h-100"
-              >
-                <div class="card-body text-center">
-                  <i class="bi bi-folder-fill display-4 text-warning"></i>
+              <div class="border rounded p-1">
+                <div class="d-flex justify-content-between">
                   <div
-                    class="small text-truncate mt-2"
-                    :title="expediente.nombre"
+                    v-if="folderToEdit.id === expediente._id"
+                    class="border rounded"
                   >
-                    {{ expediente.nombre }}
+                    <button
+                      type="button"
+                      class="btn btn-sm"
+                      @click.stop="cancelarEdicion"
+                    >
+                      <i class="bi bi-x-circle text-danger fs-6"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm"
+                      @click.stop="guardarEdicion"
+                    >
+                      <i class="bi bi-check-circle text-success fs-6"></i>
+                    </button>
                   </div>
-                  <!-- <div class="mt-2">
-                  <button type="button" class="btn btn-sm btn-outline-primary">
-                    <i class="bi bi-pencil"></i>
+                  <button
+                    v-else
+                    type="button"
+                    class="btn btn-sm"
+                    @click.stop="modoEdicion(expediente._id)"
+                  >
+                    <i class="bi bi-pencil text-primary fs-6"></i>
                   </button>
                   <button
                     type="button"
-                    class="btn btn-sm btn-outline-danger ms-1"
+                    class="btn btn-sm"
+                    @click.stop="eliminarExpediente(expediente._id)"
                   >
-                    <i class="bi bi-trash"></i>
+                    <i class="bi bi-trash text-danger fs-6"></i>
                   </button>
-                </div> -->
                 </div>
-              </a>
+                <div class="text-center position-relative mb-2">
+                  <i class="bi bi-folder-fill display-4 text-warning"></i>
+                  <a
+                    :href="`./expediente.html?id=${expediente._id}`"
+                    class="stretched-link"
+                  ></a>
+                </div>
+                <div class="text-center mb-3">
+                  <input
+                    v-if="folderToEdit.id === expediente._id"
+                    type="text"
+                    class="form-control form-control-sm text-center"
+                    v-model="folderToEdit.nombre"
+                  />
+                  <span v-else class="text-truncate"
+                    >{{ expediente.nombre }}</span
+                  >
+                </div>
+              </div>
             </div>
           </div>
         </div>
