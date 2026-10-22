@@ -1,6 +1,10 @@
 import { CACHE_KEY, MODE_DEV } from "./constants.js";
+import { materialesDBmock } from "../mocks/materiales.js";
 
 export async function fetchMateriales() {
+
+  return materialesDBmock;
+  
   const cache = localStorage.getItem(CACHE_KEY);
 
   if (MODE_DEV && cache) {
@@ -78,4 +82,20 @@ export const formatNombreTabla = ({
   return [categoria, nombre, pieza, tipo, medida, unidad, color]
     .filter(Boolean)
     .join(" ");
+};
+
+export const formatNombreLista = ({
+  id,
+  categoria,
+  nombre,
+  pieza,
+  tipo,
+  medida,
+  unidad,
+  color,
+}) => {
+  const nombreFormat = [categoria, nombre, pieza, tipo, medida, unidad, color]
+    .filter(Boolean)
+    .join(" ");
+  return `${id} - ${nombreFormat}`;
 };

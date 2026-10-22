@@ -1,6 +1,11 @@
+import AutoComplete from "./autoComplete.js";
+import { formatNombreLista } from "../utils.js";
 const { reactive, computed } = Vue;
 
 export default {
+  components: {
+    AutoComplete,
+  },
   props: ["materialesDb"],
   emits: ["agregar"],
   setup(props, { emit }) {
@@ -28,7 +33,10 @@ export default {
           material.color,
         ];
         return campos.some((campo) => campo?.toLowerCase().includes(nombre));
-      });
+      }).map(material => ({
+        id: material.id,
+        nombre: formatNombreLista(material),
+      }));
     });
 
     //Methods
@@ -37,30 +45,6 @@ export default {
       formMaterial.cantidad = 1;
       formMaterial.ancho = "";
       formMaterial.alto = "";
-    };
-
-    const formatNombreLista = ({
-      id,
-      categoria,
-      nombre,
-      pieza,
-      tipo,
-      medida,
-      unidad,
-      color,
-    }) => {
-      const nombreFormat = [
-        categoria,
-        nombre,
-        pieza,
-        tipo,
-        medida,
-        unidad,
-        color,
-      ]
-        .filter(Boolean)
-        .join(" ");
-      return `${id} - ${nombreFormat}`;
     };
 
     const agregar = () => {
@@ -88,37 +72,18 @@ export default {
     return {
       formMaterial,
       materialesFiltrados,
-      formatNombreLista,
       agregar,
     };
   },
   template: `
     <form @submit.prevent="agregar">
-      <div class="position-relative mb-3">
+      <div class="mb-3">
         <label class="form-label">Material</label>
-        <input
-          type="text"
-          class="form-control form-control-sm"
+        <auto-complete
           v-model="formMaterial.id"
-        />
-        <div
-          class="position-absolute top-100 start-0 w-100"
-          style="z-index: 1000"
-        >
-          <ul
-            class="list-group overflow-y-auto"
-            style="max-height: 300px"
-          >
-            <li
-              v-for="material in materialesFiltrados"
-              :key="material.id"
-              class="list-group-item list-group-item-action"
-              @click="formMaterial.id = String(material.id)"
-            >
-              {{ formatNombreLista(material) }}
-            </li>
-          </ul>
-        </div>
+          :items="materialesFiltrados"
+          @select-item="formMaterial.id = String($event.id)"
+        ></auto-complete>
       </div>
       <div class="mb-3">
         <label class="form-label">Cantidad</label>
