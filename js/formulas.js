@@ -7,6 +7,7 @@ const app = createApp({
   setup() {
     const isLoading = ref(true);
     const foldersFormulasDB = ref([]);
+    const formulasSingleDB = ref([]);
     const form = ref({
       nombre: {
         value: "",
@@ -20,6 +21,13 @@ const app = createApp({
       const { error, data } = await Axiomi.get("folders-formulas");
       if (!error) {
         foldersFormulasDB.value = data;
+      }
+    };
+
+    const getFormulasSingle = async () => {
+      const { error, data } = await Axiomi.get("formulas/single");
+      if (!error) {
+        formulasSingleDB.value = data;
       }
     };
 
@@ -60,13 +68,19 @@ const app = createApp({
       });
     });
 
+    const filteredFormulasSingle = computed(() => {
+      return formulasSingleDB.value.filter((formula) => {
+        return formula.nombre.toLowerCase().includes(search.value.toLowerCase());
+      });
+    });
+
     // Lifecycle hooks
     onMounted(async () => {
       try {
-        // isLoading.value = true;
         await getFoldersFormulas();
+        await getFormulasSingle();
       } catch (error) {
-        alert("Error al obtener los folders");
+        alert("Error al obtener las fórmulas");
       } finally {
         isLoading.value = false;
       }
@@ -77,7 +91,9 @@ const app = createApp({
       search,
       isLoading,
       foldersFormulasDB,
+      formulasSingleDB,
       filteredFoldersFormulas,
+      filteredFormulasSingle,
       createFolder,
     };
   },

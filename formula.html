@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
     />
-    <title>Iguapp</title>
+    <title>Iguapp - Fórmula</title>
     <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
@@ -27,30 +27,79 @@
   </head>
   <body>
     <div id="app" v-cloak>
-      <loader-iguana v-if="isLoading"></loader-iguana>
+      <loader-iguana v-if="firstLoad"></loader-iguana>
       <template v-else>
         <header-back heading="Nueva fórmula"></header-back>
         <div class="container pt-3">
           <div class="row">
             <div class="col"></div>
             <div class="col-12 col-md-8">
-              <div class="mb-3">
-                <label class="form-label">Nombre</label>
-                <input
-                  type="text"
-                  class="form-control form-control-sm"
-                  v-model="formFormula.nombre"
-                />
-              </div>
+              <form id="form-formula" @submit.prevent="onSubmitFormula">
+                <div class="mb-3">
+                  <label class="form-label">Nombre</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm"
+                    required
+                    minlength="1"
+                    v-model="formFormula.nombre"
+                  />
+                </div>
+              </form>
               <div class="table-responsive">
                 <table class="table">
                   <thead>
                     <tr>
-                      <th>Material</th>
+                      <th>Nombre</th>
+                      <th>Cantidad</th>
+                      <th>Fórmula ancho</th>
+                      <th>Fórmula alto</th>
+                      <th></th>
                     </tr>
                   </thead>
-                  <tbody></tbody>
+                  <tbody>
+                    <tr
+                      v-for="(material, index) in formFormula.materiales"
+                      :key="index"
+                    >
+                      <td>{{ material.nombre }}</td>
+                      <td>{{ material.cantidad }}</td>
+                      <td>{{ material.ancho }}</td>
+                      <td>{{ material.alto }}</td>
+                      <td>
+                        <div class="d-flex gap-2">
+                          <button
+                            class="btn btn-outline-iguapp btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalMaterial"
+                            @click="abrirModalEditarMaterial(index)"
+                          >
+                            <i class="bi bi-pencil"></i>
+                          </button>
+                          <button
+                            class="btn btn-outline-danger btn-sm"
+                            @click="eliminarMaterial(index)"
+                          >
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
+              </div>
+              <div class="text-end">
+                <button
+                  type="submit"
+                  class="btn btn-iguapp"
+                  form="form-formula"
+                  :disabled="!enableSubmitFormula"
+                >
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-floppy"></i>
+                    <span>Guardar</span>
+                  </div>
+                </button>
               </div>
             </div>
             <div class="col"></div>
@@ -61,39 +110,79 @@
           type="button"
           class="btn btn-iguapp rounded-circle position-fixed bottom-0 end-0 m-4 d-flex align-items-center justify-content-center p-0"
           style="width: 3.5rem; height: 3.5rem"
-          aria-label="Nuevo material"
-          @click="materialModalOpen = true"
+          data-bs-toggle="modal"
+          data-bs-target="#modalMaterial"
         >
           <i class="bi bi-tools fs-4"></i>
         </button>
-
-        <modal-base
-          v-if="materialModalOpen"
-          aria-labelledby="materialModalTitle"
-          @close="materialModalOpen = false"
-        >
-          <form
-            @submit.prevent="onSubmit"
-            class="d-flex flex-column overflow-hidden"
-          >
-            <header class="modal-header">
-              <h2 class="modal-title fs-5" id="materialModalTitle">Tras</h2>
-              <button
-                type="button"
-                class="btn-close"
-                aria-label="Cerrar"
-                @click="materialModalOpen = false"
-              ></button>
-            </header>
-            <div class="modal-body"></div>
-            <footer class="modal-footer">
-              <button class="btn btn-iguapp">Agregar +</button>
-            </footer>
-          </form>
-        </modal-base>
       </template>
+
+      <modal-base
+        ref="modalEl"
+        :title="modoEdicionMaterial ? 'Editar material' : 'Agregar material'"
+        id="modalMaterial"
+      >
+        <form @submit.prevent="onSubmitMaterial" id="form-material">
+          <div class="mb-3">
+            <label class="form-label">Material</label>
+            <auto-complete
+              :items="materialesFiltrados"
+              @select-item="selectMaterial"
+            >
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                v-model="formMaterial.autoComplete"
+              />
+            </auto-complete>
+            <div v-if="formMaterial.id" class="form-text">
+              {{ formMaterial.nombre }}
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Cantidad</label>
+            <input
+              type="number"
+              min="1"
+              class="form-control form-control-sm"
+              v-model="formMaterial.cantidad"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Fórmula ancho</label>
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              v-model="formMaterial.ancho"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Fórmula alto</label>
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              v-model="formMaterial.alto"
+            />
+          </div>
+        </form>
+        <template #btn-footer>
+          <button
+            type="submit"
+            class="btn btn-iguapp"
+            form="form-material"
+            :disabled="!enableSubmitMaterial"
+          >
+            <span>{{ modoEdicionMaterial ? 'Editar' : 'Agregar' }}</span>
+          </button>
+        </template>
+      </modal-base>
     </div>
 
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
     <script src="./js/formula.js" type="module"></script>
   </body>
 </html>

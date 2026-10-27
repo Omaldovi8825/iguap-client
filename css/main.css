@@ -76,3 +76,7 @@ select {
 .bg_iguapp_green {
   background-color: var(--iguapp-green);
 }
+
+.color_iguapp_green {
+  color: var(--iguapp-green);
+}

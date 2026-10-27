@@ -53,11 +53,18 @@
                       role="status"
                       aria-hidden="true"
                     ></span>
-                    <span v-else>Crear</span>
+                    <span v-else>
+                      <i class="bi bi-folder-plus"></i>
+                    </span>
                   </button>
                   <div class="invalid-feedback">{{ form.nombre.error }}</div>
                 </div>
               </form>
+              <div class="mb-3">
+                <a href="./formula.html" class="btn btn-iguapp w-100">
+                  <span>Nueva fórmula</span>
+                </a>
+              </div>
               <div class="input-group">
                 <span class="input-group-text">
                   <i class="bi bi-search"></i>
@@ -65,13 +72,16 @@
                 <input
                   type="search"
                   class="form-control"
-                  placeholder="Buscar folder..."
+                  placeholder="Buscar..."
                   v-model="search"
                 />
               </div>
             </div>
             <div class="col mb-3">
-              <div class="row">
+              <div v-if="!!filteredFoldersFormulas.length" class="row">
+                <div class="col-12">
+                  <h2 class="fs-4 color_iguapp_green">Folders</h2>
+                </div>
                 <div
                   v-for="folder in filteredFoldersFormulas"
                   :key="folder._id"
@@ -85,6 +95,26 @@
                       class="bi bi-folder-fill display-4 text-warning mb-2"
                     ></i>
                     <span>{{ folder.nombre }}</span>
+                  </a>
+                </div>
+              </div>
+              <div v-if="!!filteredFormulasSingle.length" class="row">
+                <div class="col-12">
+                  <h2 class="fs-4 color_iguapp_green">Fórmulas</h2>
+                </div>
+                <div
+                  v-for="formula in filteredFormulasSingle"
+                  :key="formula._id"
+                  class="col-6 col-md-4 col-lg-3 mb-3"
+                >
+                  <a
+                    :href="`./formula.html?id=${formula._id}`"
+                    class="border rounded-3 p-3 d-flex flex-column align-items-center text-decoration-none text-dark bg-light-subtle"
+                  >
+                    <i
+                      class="bi bi-calculator display-4 mb-2 color_iguapp_green"
+                    ></i>
+                    <span>{{ formula.nombre }}</span>
                   </a>
                 </div>
               </div>
