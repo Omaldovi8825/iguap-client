@@ -214,6 +214,41 @@ const app = createApp({
       formCotizacion.materiales.push(material);
     };
 
+    const encontradoMaterialEnDb = (material) => {
+      return materialesDB.value.find((m) => m.id === material.id);
+    };
+
+    const transormarMateriales = () => {
+      return formCotizacion.materiales.map((material) => {
+        const materialEncontrado = encontradoMaterialEnDb(material);
+        return {
+          ...material,
+          precio: materialEncontrado.precio,
+        };
+      });
+    };
+
+    const guardarCotizacion = async () => {
+      const dataCotizacion = {
+        ...formCotizacion,
+        idExpediente,
+        materiales: transormarMateriales(),
+        ancho: Number(formCotizacion.ancho),
+        alto: Number(formCotizacion.alto),
+        manoObra: Number(formCotizacion.manoObra),
+        extras: Number(formCotizacion.extras),
+      };
+
+      try {
+        const { error } = await Axiomi.post("cotizaciones", dataCotizacion);
+        if (!error) {
+          location.href = `/expediente.html?id=${idExpediente}`;
+        }
+      } catch (error) {
+        alert("Error al crear la cotización");
+      }
+    };
+
     // Computed properties
     const heading = computed(() => {
       return `Expediente: ${expediente.value.nombre}`;
@@ -238,7 +273,7 @@ const app = createApp({
 
     const cotizacion = computed(() => {
       const materiales = formCotizacion.materiales.map((material) => {
-        const materialDB = materialesDB.value.find((m) => m.id === material.id);
+        const materialEncontrado = encontradoMaterialEnDb(material);
 
         const ancho = aplicarFormula(
           formCotizacion.ancho,
@@ -252,11 +287,14 @@ const app = createApp({
         const factorAncho = ancho ? cmAm(ancho) : 1;
         const factorAlto = alto ? cmAm(alto) : 1;
         const precio =
-          factorAncho * factorAlto * materialDB.precio * material.cantidad;
+          factorAncho *
+          factorAlto *
+          materialEncontrado.precio *
+          material.cantidad;
 
         return {
           id: material.id,
-          nombre: formatNombreTabla(materialDB),
+          nombre: formatNombreTabla(materialEncontrado),
           cantidad: material.cantidad,
           formula: formatFormula(material.formulas),
           // medida: formatMedida(ancho, alto),
@@ -286,6 +324,14 @@ const app = createApp({
           total: totalMateriales + manoObra + extras,
         },
       };
+    });
+
+    const puedeGuardar = computed(() => {
+      return (
+        formCotizacion.materiales.length > 0 &&
+        !!formCotizacion.nombre.trim() &&
+        (formCotizacion.ancho || formCotizacion.alto)
+      );
     });
 
     // Lifecycle hooks
@@ -328,11 +374,13 @@ const app = createApp({
       formulasFiltradas,
       heading,
       cotizacion,
+      puedeGuardar,
       formatMoney,
       seleccionarFormula,
       onFormulaInput,
       eliminarMaterial,
-      agregarMaterial
+      agregarMaterial,
+      guardarCotizacion,
     };
   },
 });

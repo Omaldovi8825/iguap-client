@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <title>Iguapp - Materiales</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <!-- Bootstrap icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+    />
+    <!-- custom CSS -->
+    <link rel="stylesheet" href="./css/main.css" />
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- <script src="./js/Vue.js"></script> -->
+  </head>
+  <body>
+    <div id="app" v-cloak>
+      <loader-iguana v-if="firstLoad"></loader-iguana>
+      <template v-else>
+        <header-back heading="Materiales"></header-back>
+        <div class="container pt-3">
+          <div class="row">
+            <div class="col-12 col-xl-4 mb-3">
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-search"></i>
+                </span>
+                <input
+                  type="search"
+                  class="form-control"
+                  placeholder="Buscar material..."
+                  v-model="search"
+                />
+              </div>
+            </div>
+            <div class="col-12 col-xl-8 mb-3">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Pieza</th>
+                      <th>Tipo</th>
+                      <th>Categoría</th>
+                      <th>Nombre</th>
+                      <th>Medida</th>
+                      <th>Unidad</th>
+                      <th>Color</th>
+                      <th>Precio</th>
+                      <th>Unidad precio</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="material in materialesFiltrados"
+                      :key="material._id"
+                    >
+                      <td>{{ material.pieza }}</td>
+                      <td>{{ material.tipo }}</td>
+                      <td>{{ material.categoria }}</td>
+                      <td>{{ material.nombre }}</td>
+                      <td>{{ material.medida }}</td>
+                      <td>{{ material.unidad }}</td>
+                      <td>{{ material.color }}</td>
+                      <td>{{ material.precio }}</td>
+                      <td>{{ material.unidad_precio }}</td>
+                      <td>
+                        <div class="d-flex gap-2">
+                          <button
+                            class="btn btn-sm btn-outline-iguapp"
+                            @click="abrirModalEditar(material)"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalMaterial"
+                          >
+                            <i class="bi bi-pencil"></i>
+                          </button>
+                          <button
+                            class="btn btn-sm btn-outline-danger"
+                            @click="eliminarMaterial(material._id)"
+                          >
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="btn btn-iguapp rounded-circle position-fixed bottom-0 end-0 m-4 d-flex align-items-center justify-content-center p-0"
+          style="width: 3.5rem; height: 3.5rem"
+          data-bs-toggle="modal"
+          data-bs-target="#modalMaterial"
+        >
+          <i class="bi bi-tools fs-4"></i>
+        </button>
+      </template>
+
+      <modal-base
+        ref="modalEl"
+        :title="modoEdicion ? 'Editar material' : 'Nuevo material'"
+        id="modalMaterial"
+      >
+        <form @submit.prevent="onSubmit" id="form-material">
+          <div class="mb-3">
+            <label class="form-label">Pieza</label>
+            <input
+              type="text"
+              placeholder="ej: ventana, mosquitero"
+              class="form-control form-control-sm"
+              v-model="formMaterial.pieza"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Tipo</label>
+            <input
+              type="text"
+              placeholder="ej: fijo, corredizo"
+              class="form-control form-control-sm"
+              v-model="formMaterial.tipo"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Categoría</label>
+            <input
+              type="text"
+              placeholder="ej: perfil, herraje, vidrio"
+              class="form-control form-control-sm"
+              v-model="formMaterial.categoria"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input
+              type="text"
+              placeholder="ej: riel, cerco, solera"
+              class="form-control form-control-sm"
+              v-model="formMaterial.nombre"
+              required
+              minlength="1"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Medida</label>
+            <input
+              type="number"
+              placeholder="ej: 2, 3"
+              v-model="formMaterial.medida"
+              step="0.01"
+              min="0.01"
+              class="form-control form-control-sm"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Unidad</label>
+            <select
+              v-model="formMaterial.unidad"
+              class="form-select form-select-sm"
+            >
+              <option value="">Selecciona una unidad</option>
+              <option value="mm">mm</option>
+              <option value="mm2">mm2</option>
+              <option value="cm">cm</option>
+              <option value="cm2">cm2</option>
+              <option value="m">m</option>
+              <option value="m2">m2</option>
+              <option value="in">in</option>
+              <option value="u">unidad</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Color</label>
+            <input
+              type="text"
+              placeholder="ej: blanco, negro"
+              class="form-control form-control-sm"
+              v-model="formMaterial.color"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Precio</label>
+            <input
+              type="number"
+              placeholder="ej: 2, 1.45"
+              v-model="formMaterial.precio"
+              step="0.01"
+              min="0.01"
+              class="form-control form-control-sm"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Unidad precio</label>
+            <select
+              v-model="formMaterial.unidad_precio"
+              class="form-select form-select-sm"
+            >
+              <option value="">Selecciona una unidad</option>
+              <option value="m">m</option>
+              <option value="m2">m2</option>
+              <option value="u">unidad</option>
+            </select>
+          </div>
+        </form>
+        <template #btn-footer>
+          <button
+            type="submit"
+            class="btn btn-iguapp"
+            form="form-material"
+            :disabled="isLoading"
+          >
+            <span
+              v-if="isLoading"
+              class="spinner-border spinner-border-sm me-1"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            <span v-else> {{ modoEdicion ? "Editar" : "Agregar" }} </span>
+          </button>
+        </template>
+      </modal-base>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+    <script src="./js/materiales.js" type="module"></script>
+  </body>
+</html>

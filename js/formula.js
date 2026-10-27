@@ -1,131 +1,66 @@
 import { Axiomi } from "./api.js";
-import { fetchMateriales, formatNombreTabla, formatFormula } from "./utils.js";
-import FormMaterial from "./components/form_material.js";
+// import { fetchMateriales, formatNombreTabla, formatFormula } from "./utils.js";
+// import FormMaterial from "./components/form_material.js";
 import HeaderBack from "./components/headerBack.js";
+import LoaderIguana from "./components/loader_iguana.js";
+import ModalBase from "./components/modal_base.js";
+import { getMateriales, formatNombreLista } from "./utils.js";
 const { createApp, ref, onMounted, reactive, watch, computed, nextTick } = Vue;
 
+const id_folder = new URLSearchParams(window.location.search).get("id_folder");
 const id_formula = new URLSearchParams(window.location.search).get("id");
 
 const app = createApp({
   setup() {
-    const isLoading = ref(false);
+    const isLoading = ref(true);
     const materialesDB = ref([]);
-
-    const nuevaFormula = ref({
-      _id: "",
+    const materialModalOpen = ref(false);
+    const formFormula = reactive({
       nombre: "",
-      materiales: [],
     });
 
     // Computed properties
-    const heading = computed(() => {
-      return nuevaFormula.value._id
-        ? nuevaFormula.value.nombre
-        : "Nueva formula";
-    });
-
-    const modoEdicion = computed(() => !!nuevaFormula.value._id);
-
-    const materialesFormula = computed(() => {
-      return nuevaFormula.value.materiales.map((material) => {
-        const materialDB = materialesDB.value.find(
-          (m) => m.id === Number(material.id),
-        );
+    const materialesFormateados = computed(() => {
+      return materialesDB.value.map((material) => {
         return {
-          id: material.id,
-          nombre: formatNombreTabla(materialDB),
-          cantidad: material.cantidad,
-          formula: formatFormula(material.formulas),
-          formulas: { ...material.formulas },
+          id: material._id,
+          nombre: formatNombreLista(material),
         };
       });
     });
 
     // Methods
-    const cargarMaterialesDB = async () => {
-      materialesDB.value = await fetchMateriales();
-    };
-
-    const cargarFormulaDB = async () => {
-      const { error, data } = await Axiomi.get(`formulas/${id_formula}`);
+    const getMaterialesDb = async () => {
+      const { error, data } = await getMateriales();
       if (!error) {
-        nuevaFormula.value = data;
-      }
-    };
-
-    const agregarMaterial = (material) => {
-      nuevaFormula.value.materiales.push(material);
-    };
-
-    const eliminarMaterial = (index) => {
-      nuevaFormula.value.materiales.splice(index, 1);
-    };
-
-    const guardarFormula = async () => {
-      if (!nuevaFormula.value.nombre.trim()) {
-        alert("asigna el nombre de la fórmula");
-        return;
-      }
-
-      if (nuevaFormula.value.materiales.length === 0) {
-        alert("agrega al menos un material");
-        return;
-      }
-
-      isLoading.value = true;
-      try {
-        let err;
-        if (modoEdicion.value) {
-          const { error } = await Axiomi.put(
-            `formulas/${nuevaFormula.value._id}`,
-            nuevaFormula.value,
-          );
-          err = error;
-        } else {
-          const { error } = await Axiomi.post("formulas", nuevaFormula.value);
-          err = error;
-        }
-        if (!err) {
-          location.href = "./";
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        isLoading.value = false;
+        materialesDB.value = data;
       }
     };
 
     // Lifecycle hooks
     onMounted(async () => {
-      isLoading.value = true;
       try {
-        await cargarMaterialesDB();
-        if (id_formula) {
-          await cargarFormulaDB();
-        }
+        await getMaterialesDb();
       } catch (error) {
         console.log(error);
-        alert("Error al cargar la data");
+        alert("Error al obtener los datos");
       } finally {
         isLoading.value = false;
       }
     });
 
     return {
-      heading,
-      modoEdicion,
       isLoading,
-      nuevaFormula,
-      materialesFormula,
-      materialesDB,
-      agregarMaterial,
-      eliminarMaterial,
-      guardarFormula,
+      materialesFormateados,
+      formFormula,
+      materialModalOpen,
     };
   },
 });
 
-app.component("form-material", FormMaterial);
+// app.component("form-material", FormMaterial);
 app.component("header-back", HeaderBack);
+app.component("loader-iguana", LoaderIguana);
+app.component("modal-base", ModalBase);
 
 app.mount("#app");

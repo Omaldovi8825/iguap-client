@@ -1,10 +1,10 @@
 import { CACHE_KEY, MODE_DEV } from "./constants.js";
+import { Axiomi } from "./api.js";
 import { materialesDBmock } from "../mocks/materiales.js";
 
 export async function fetchMateriales() {
+  // return materialesDBmock;
 
-  return materialesDBmock;
-  
   const cache = localStorage.getItem(CACHE_KEY);
 
   if (MODE_DEV && cache) {
@@ -85,7 +85,6 @@ export const formatNombreTabla = ({
 };
 
 export const formatNombreLista = ({
-  id,
   categoria,
   nombre,
   pieza,
@@ -94,8 +93,11 @@ export const formatNombreLista = ({
   unidad,
   color,
 }) => {
-  const nombreFormat = [categoria, nombre, pieza, tipo, medida, unidad, color]
+  return [categoria, nombre, pieza, tipo, medida, unidad, color]
     .filter(Boolean)
     .join(" ");
-  return `${id} - ${nombreFormat}`;
+};
+
+export const getMateriales = () => {
+  return Axiomi.get("materiales");
 };

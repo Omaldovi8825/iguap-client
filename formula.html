@@ -26,103 +26,72 @@
     <!-- <script src="./js/Vue.js"></script> -->
   </head>
   <body>
-    <div id="app" v-cloak class="container">
-      <header-back :heading="heading"></header-back>
-      <div class="row">
-        <div class="col-12 col-md-4 bg-secondary-subtle rounded-3 py-3 mb-3">
-          <form-material
-            :materiales-db="materialesDB"
-            @agregar="agregarMaterial"
-          ></form-material>
+    <div id="app" v-cloak>
+      <loader-iguana v-if="isLoading"></loader-iguana>
+      <template v-else>
+        <header-back heading="Nueva fórmula"></header-back>
+        <div class="container pt-3">
+          <div class="row">
+            <div class="col"></div>
+            <div class="col-12 col-md-8">
+              <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  v-model="formFormula.nombre"
+                />
+              </div>
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Material</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="col"></div>
+          </div>
         </div>
-        <div class="col mb-3">
-          <form @submit.prevent="guardarFormula">
-            <div class="mb-3">
-              <label class="form-label">Nombre</label>
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                v-model="nuevaFormula.nombre"
-              />
-            </div>
-            <div class="table-responsive">
-              <table class="table table-sm">
-                <thead>
-                  <tr>
-                    <th>#id</th>
-                    <th>Material</th>
-                    <th>Cantidad</th>
-                    <template v-if="modoEdicion">
-                      <th>Fórmula ancho</th>
-                      <th>Fórmula alto</th>
-                    </template>
-                    <th v-else>Fórmula</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="(material, index) in materialesFormula"
-                    :key="index"
-                  >
-                    <td>{{ material.id }}</td>
-                    <td>{{ material.nombre }}</td>
-                    <template v-if="modoEdicion">
-                      <td>
-                        <input
-                          type="number"
-                          class="form-control form-control-sm"
-                          v-model="nuevaFormula.materiales[index].cantidad"
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          class="form-control form-control-sm"
-                          v-model="nuevaFormula.materiales[index].formulas.ancho"
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          class="form-control form-control-sm"
-                          v-model="nuevaFormula.materiales[index].formulas.alto"
-                        />
-                      </td>
-                    </template>
-                    <template v-else>
-                      <td>{{ material.cantidad }}</td>
-                      <td>{{ material.formula }}</td>
-                    </template>
-                    <td>
-                      <button
-                        class="btn btn-sm btn-outline-danger"
-                        @click="eliminarMaterial(index)"
-                        type="button"
-                      >
-                        <i class="bi bi-trash3"></i>
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div>
+
+        <button
+          type="button"
+          class="btn btn-iguapp rounded-circle position-fixed bottom-0 end-0 m-4 d-flex align-items-center justify-content-center p-0"
+          style="width: 3.5rem; height: 3.5rem"
+          aria-label="Nuevo material"
+          @click="materialModalOpen = true"
+        >
+          <i class="bi bi-tools fs-4"></i>
+        </button>
+
+        <modal-base
+          v-if="materialModalOpen"
+          aria-labelledby="materialModalTitle"
+          @close="materialModalOpen = false"
+        >
+          <form
+            @submit.prevent="onSubmit"
+            class="d-flex flex-column overflow-hidden"
+          >
+            <header class="modal-header">
+              <h2 class="modal-title fs-5" id="materialModalTitle">Tras</h2>
               <button
-                class="btn btn-outline-secondary btn-sm w-100"
-                :disabled="isLoading"
-              >
-                <span
-                  v-if="isLoading"
-                  class="spinner-border spinner-border-sm"
-                  role="status"
-                ></span>
-                <span v-else>Guardar <i class="bi bi-floppy"></i></span>
-              </button>
-            </div>
+                type="button"
+                class="btn-close"
+                aria-label="Cerrar"
+                @click="materialModalOpen = false"
+              ></button>
+            </header>
+            <div class="modal-body"></div>
+            <footer class="modal-footer">
+              <button class="btn btn-iguapp">Agregar +</button>
+            </footer>
           </form>
-        </div>
-      </div>
+        </modal-base>
+      </template>
     </div>
 
     <script src="./js/formula.js" type="module"></script>

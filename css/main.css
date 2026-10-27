@@ -2,8 +2,77 @@
   display: none;
 }
 
+:root {
+  --iguapp-green: #2f8a2c;
+  --iguapp-body: #f7fbf5;
+}
+
+body {
+  background-color: var(--iguapp-body);
+}
+
 input,
 textarea,
 select {
   font-size: 16px;
+}
+
+.logo-loader {
+  transform-origin: center;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+/* @media (prefers-reduced-motion: reduce) {
+  .logo-loader {
+    animation: none;
+  }
+} */
+
+.btn-outline-iguapp {
+  --bs-btn-color: var(--iguapp-green);
+  --bs-btn-border-color: var(--iguapp-green);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--iguapp-green);
+  --bs-btn-hover-border-color: var(--iguapp-green);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--iguapp-green);
+  --bs-btn-active-border-color: var(--iguapp-green);
+  --bs-btn-disabled-color: var(--iguapp-green);
+  --bs-btn-disabled-border-color: var(--iguapp-green);
+}
+
+.btn-iguapp {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--iguapp-green);
+  --bs-btn-border-color: var(--iguapp-green);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: color-mix(in srgb, var(--iguapp-green) 85%, black);
+  --bs-btn-hover-border-color: color-mix(
+    in srgb,
+    var(--iguapp-green) 80%,
+    black
+  );
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: color-mix(in srgb, var(--iguapp-green) 80%, black);
+  --bs-btn-active-border-color: color-mix(
+    in srgb,
+    var(--iguapp-green) 75%,
+    black
+  );
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: var(--iguapp-green);
+  --bs-btn-disabled-border-color: var(--iguapp-green);
+}
+
+.bg_iguapp_green {
+  background-color: var(--iguapp-green);
 }

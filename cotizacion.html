@@ -201,6 +201,16 @@
               </tbody>
             </table>
           </div>
+          <div class="text-end mb-3">
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              :disabled="!puedeGuardar"
+              @click="guardarCotizacion"
+            >
+              Guardar
+            </button>
+          </div>
         </div>
       </div>
     </div>

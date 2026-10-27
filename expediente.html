@@ -37,7 +37,31 @@
             >Nueva cotización</a
           >
         </div>
-        <div class="col mb-3"></div>
+        <div class="col mb-3">
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Cotizaciones</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="cotizacion in expediente.cotizaciones"
+                  :key="cotizacion._id"
+                >
+                  <td>{{ cotizacion.nombre }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
