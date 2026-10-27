@@ -1,10 +1,10 @@
 export class Axiomi {
-  static baseUrl = "https://iguapp-server.onrender.com/api/";
+  static baseUrl = "https://iguapp-server-1.onrender.com/api/";
   // static baseUrl = "http://localhost:3000/api/";
 
   static async get(endpoint) {
     const getR = await fetch(`${this.baseUrl}${endpoint}`);
-    return getR.json()
+    return getR.json();
   }
 
   static async post(endpoint, data) {
@@ -15,7 +15,7 @@ export class Axiomi {
       },
       body: JSON.stringify(data),
     });
-    return postR.json()
+    return postR.json();
   }
 
   static async put(endpoint, data) {
@@ -26,7 +26,7 @@ export class Axiomi {
       },
       body: JSON.stringify(data),
     });
-    return putR.json()
+    return putR.json();
   }
 
   static async delete(endpoint, data) {
