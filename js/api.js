@@ -1,6 +1,6 @@
 export class Axiomi {
-  // static baseApiUrl = "https://iguapp-server.onrender.com/api/";
-  static baseUrl = "http://localhost:3000/";
+  static baseApiUrl = "https://iguapp-server.onrender.com/api/";
+  // static baseUrl = "http://localhost:3000/";
   static baseApiUrl = `${this.baseUrl}api/`;
 
   static async load() {
