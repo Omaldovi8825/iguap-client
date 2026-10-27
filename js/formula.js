@@ -1,12 +1,11 @@
 import { Axiomi } from "./api.js";
-// import { fetchMateriales, formatNombreTabla, formatFormula } from "./utils.js";
-// import FormMaterial from "./components/form_material.js";
 import HeaderBack from "./components/headerBack.js";
 import LoaderIguana from "./components/loader_iguana.js";
 import ModalBase from "./components/modal_base.js";
 import AutoComplete from "./components/autoComplete.js";
+import Spinner from "./components/spinner.js";
 import { getMateriales, formatNombreLista } from "./utils.js";
-const { createApp, ref, onMounted, reactive, watch, computed, nextTick } = Vue;
+const { createApp, ref, onMounted, reactive, computed } = Vue;
 
 const id_folder = new URLSearchParams(window.location.search).get("id_folder");
 const id_formula = new URLSearchParams(window.location.search).get("id");
@@ -26,6 +25,8 @@ const app = createApp({
     const isLoading = ref(false);
     const firstLoad = ref(true);
     const materialesDB = ref([]);
+    const folderDB = ref(null);
+    const formulaDB = ref(null);
     const formFormula = reactive({
       nombre: "",
       materiales: [],
@@ -34,6 +35,19 @@ const app = createApp({
     const modalEl = ref(null);
 
     // Computed properties
+    const heading = computed(() => {
+      let header = "";
+      if (folderDB.value?.nombre) {
+        header = `${folderDB.value.nombre} - `;
+      }
+      if (formulaDB.value?.nombre) {
+        header += formulaDB.value.nombre;
+      } else {
+        header += "Nueva fórmula";
+      }
+      return header;
+    });
+
     const materialesFormateados = computed(() => {
       return materialesDB.value.map((material) => {
         return {
@@ -44,7 +58,7 @@ const app = createApp({
     });
 
     const modoEdicion = computed(() => {
-      return id_formula !== null;
+      return !!id_formula;
     });
 
     const modoEdicionMaterial = computed(() => {
@@ -79,6 +93,43 @@ const app = createApp({
       const { error, data } = await getMateriales();
       if (!error) {
         materialesDB.value = data;
+      }
+    };
+
+    const getFormula = async () => {
+      const { error, data } = await Axiomi.get(`formulas/${id_formula}`);
+      if (!error) {
+        formulaDB.value = data;
+
+        const { nombre, materiales } = data;
+
+        const materialesFormateados = materiales.map((material) => {
+          const { id, formulas, cantidad } = material;
+
+          const materialDB = materialesDB.value.find(({ _id }) => _id === id);
+
+          return {
+            id,
+            nombre: formatNombreLista(materialDB),
+            cantidad: cantidad,
+            ancho: formulas.ancho,
+            alto: formulas.alto,
+          };
+        });
+
+        Object.assign(formFormula, {
+          nombre,
+          materiales: materialesFormateados,
+        });
+      }
+    };
+
+    const getFolder = async (id_folder) => {
+      const { error, data } = await Axiomi.get(
+        `folders-formulas/${id_folder}/basic`,
+      );
+      if (!error) {
+        folderDB.value = data;
       }
     };
 
@@ -131,10 +182,13 @@ const app = createApp({
     };
 
     const guardarFormula = async () => {
-      const { error } = await Axiomi.post("formulas", {
-        id_folder,
-        ...formFormula,
-      });
+      const request = modoEdicion.value
+        ? Axiomi.put(`formulas/${id_formula}`, formFormula)
+        : Axiomi.post("formulas", {
+            id_folder,
+            ...formFormula,
+          });
+      const { error } = await request;
 
       if (!error) {
         if (esFormulaHuerfana.value) {
@@ -147,9 +201,12 @@ const app = createApp({
 
     const onSubmitFormula = async () => {
       try {
+        isLoading.value = true;
         await guardarFormula();
       } catch (error) {
         alert(error.message);
+      } finally {
+        isLoading.value = false;
       }
     };
 
@@ -161,6 +218,12 @@ const app = createApp({
       );
       try {
         await getMaterialesDb();
+        if (id_formula) {
+          await getFormula();
+        }
+        if (id_folder || formulaDB.value?.id_folder) {
+          await getFolder(id_folder || formulaDB.value?.id_folder);
+        }
       } catch (error) {
         console.log(error);
         alert("Error al obtener los datos");
@@ -170,7 +233,10 @@ const app = createApp({
     });
 
     return {
+      folderDB,
+      formulaDB,
       modalEl,
+      heading,
       isLoading,
       firstLoad,
       formFormula,
@@ -193,5 +259,6 @@ app.component("header-back", HeaderBack);
 app.component("loader-iguana", LoaderIguana);
 app.component("modal-base", ModalBase);
 app.component("auto-complete", AutoComplete);
+app.component("spinner", Spinner);
 
 app.mount("#app");

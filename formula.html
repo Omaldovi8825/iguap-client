@@ -29,7 +29,7 @@
     <div id="app" v-cloak>
       <loader-iguana v-if="firstLoad"></loader-iguana>
       <template v-else>
-        <header-back heading="Nueva fórmula"></header-back>
+        <header-back :heading="heading"></header-back>
         <div class="container pt-3">
           <div class="row">
             <div class="col"></div>
@@ -93,9 +93,10 @@
                   type="submit"
                   class="btn btn-iguapp"
                   form="form-formula"
-                  :disabled="!enableSubmitFormula"
+                  :disabled="!enableSubmitFormula || isLoading"
                 >
-                  <div class="d-flex align-items-center gap-2">
+                  <spinner v-if="isLoading"></spinner>
+                  <div v-else class="d-flex align-items-center gap-2">
                     <i class="bi bi-floppy"></i>
                     <span>Guardar</span>
                   </div>
