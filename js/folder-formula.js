@@ -17,6 +17,22 @@ const app = createApp({
         folder.value = data;
       }
     };
+
+    const clonarFormula = async (id_formula) => {
+      try {
+        isLoading.value = true;
+        const { error } = await Axiomi.post(`formulas/${id_formula}/clone`);
+        if (!error) {
+          await getFolderFormula();
+        }
+      } catch (error) {
+        console.log(error);
+        alert("Error al clonar la fórmula");
+      } finally {
+        isLoading.value = false;
+      }
+    };
+
     // Computed
 
     // Lifecycle hooks
@@ -34,6 +50,7 @@ const app = createApp({
     return {
       isLoading,
       folder,
+      clonarFormula,
     };
   },
 });

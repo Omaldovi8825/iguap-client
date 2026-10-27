@@ -85,7 +85,7 @@ const app = createApp({
     });
 
     const esFormulaHuerfana = computed(() => {
-      return !id_folder;
+      return !folderDB.value?._id;
     });
 
     // Methods
@@ -191,11 +191,15 @@ const app = createApp({
       const { error } = await request;
 
       if (!error) {
-        if (esFormulaHuerfana.value) {
-          location.href = `/formulas.html`;
-        } else {
-          location.href = `/folder-formula.html?id_folder=${id_folder}`;
-        }
+        redirectToFolder();
+      }
+    };
+
+    const redirectToFolder = () => {
+      if (esFormulaHuerfana.value) {
+        location.href = `/formulas.html`;
+      } else {
+        location.href = `/folder-formula.html?id_folder=${folderDB.value?._id}`;
       }
     };
 
@@ -205,6 +209,24 @@ const app = createApp({
         await guardarFormula();
       } catch (error) {
         alert(error.message);
+      } finally {
+        isLoading.value = false;
+      }
+    };
+
+    const eliminarFormula = async () => {
+      if (!confirm("¿Estás seguro de querer eliminar esta fórmula?")) {
+        return;
+      }
+      try {
+        isLoading.value = true;
+        const { error } = await Axiomi.delete(`formulas/${id_formula}`);
+        if (!error) {
+          redirectToFolder();
+        }
+      } catch (error) {
+        console.log(error);
+        alert("Error al eliminar la fórmula");
       } finally {
         isLoading.value = false;
       }
@@ -251,6 +273,7 @@ const app = createApp({
       onSubmitFormula,
       eliminarMaterial,
       abrirModalEditarMaterial,
+      eliminarFormula,
     };
   },
 });

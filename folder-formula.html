@@ -39,13 +39,31 @@
                   <thead>
                     <tr>
                       <th>Nombre</th>
-                      <th>Acciones</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
-                    <!-- <tr v-for="formula in folder.formulas" :key="formula._id">
+                    <tr v-for="formula in folder.formulas" :key="formula._id">
                       <td>{{ formula.nombre }}</td>
-                    </tr> -->
+                      <td>
+                        <div
+                          class="d-flex gap-2 align-items-center justify-content-end"
+                        >
+                          <a
+                            :href="`./formula.html?id=${formula._id}`"
+                            class="btn btn-outline-iguapp"
+                          >
+                            <i class="bi bi-pencil"></i>
+                          </a>
+                          <button
+                            class="btn btn-outline-info"
+                            @click="clonarFormula(formula._id)"
+                          >
+                            <i class="bi bi-copy"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
