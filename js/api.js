@@ -1,5 +1,5 @@
 export class Axiomi {
-  static baseUrl = "https://iguapp-server.onrender.com/api/";
+  static baseUrl = "https://iguapp-server.onrender.com/";
   // static baseUrl = "http://localhost:3000/";
   static baseApiUrl = `${this.baseUrl}api/`;
 
