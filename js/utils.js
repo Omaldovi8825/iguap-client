@@ -1,6 +1,5 @@
 import { CACHE_KEY, MODE_DEV } from "./constants.js";
 import { Axiomi } from "./api.js";
-import { materialesDBmock } from "../mocks/materiales.js";
 
 export async function fetchMateriales() {
   // return materialesDBmock;
