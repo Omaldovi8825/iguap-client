@@ -1,7 +1,7 @@
 const { ref, watch } = Vue;
 
 export default {
-  props: ["expediente"],
+  props: ["expediente", "url"],
   emits: ["guardar-expediente", "eliminar-expediente"],
   setup(props, { emit }) {
     const editMode = ref(false);
@@ -65,7 +65,7 @@ export default {
       <div class="text-center position-relative mb-2">
         <i class="bi bi-folder-fill display-4 text-warning"></i>
         <a
-          :href="'./expediente.html?id=' + expediente._id"
+          :href="url"
           class="stretched-link"
         ></a>
       </div>

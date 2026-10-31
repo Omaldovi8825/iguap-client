@@ -1,11 +1,14 @@
 import HeaderBack from "./components/headerBack.js";
 import LoaderIguana from "./components/loader_iguana.js";
+import CardFolder from "./components/cardFolder.js";
+import Spinner from "./components/spinner.js";
 import { Axiomi } from "./api.js";
 const { createApp, ref, onMounted, reactive, watch, computed, nextTick } = Vue;
 
 const app = createApp({
   setup() {
-    const isLoading = ref(true);
+    const initialLoad = ref(true);
+    const isLoading = ref(false);
     const foldersFormulasDB = ref([]);
     const formulasSingleDB = ref([]);
     const form = ref({
@@ -61,6 +64,43 @@ const app = createApp({
       }
     };
 
+    const guardarEdicion = async (id, nombre) => {
+      try {
+        isLoading.value = true;
+        const { error } = await Axiomi.put(`folders-formulas/${id}`, {
+          nombre,
+        });
+        if (!error) {
+          await getFoldersFormulas();
+        } else {
+          alert("Error al guardar la edición");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Error al guardar la edición");
+      } finally {
+        isLoading.value = false;
+      }
+    };
+
+    const eliminarFolder = async (id) => {
+      if (!confirm("¿Estás seguro de querer eliminar este folder?")) {
+        return;
+      }
+      try {
+        isLoading.value = true;
+        const { error } = await Axiomi.delete(`folders-formulas/${id}`);
+        if (!error) {
+          await getFoldersFormulas();
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Error al eliminar el folder");
+      } finally {
+        isLoading.value = false;
+      }
+    };
+
     // Computed
     const filteredFoldersFormulas = computed(() => {
       return foldersFormulasDB.value.filter((folder) => {
@@ -70,7 +110,9 @@ const app = createApp({
 
     const filteredFormulasSingle = computed(() => {
       return formulasSingleDB.value.filter((formula) => {
-        return formula.nombre.toLowerCase().includes(search.value.toLowerCase());
+        return formula.nombre
+          .toLowerCase()
+          .includes(search.value.toLowerCase());
       });
     });
 
@@ -82,24 +124,29 @@ const app = createApp({
       } catch (error) {
         alert("Error al obtener las fórmulas");
       } finally {
-        isLoading.value = false;
+        initialLoad.value = false;
       }
     });
 
     return {
       form,
       search,
+      initialLoad,
       isLoading,
       foldersFormulasDB,
       formulasSingleDB,
       filteredFoldersFormulas,
       filteredFormulasSingle,
       createFolder,
+      guardarEdicion,
+      eliminarFolder,
     };
   },
 });
 
 app.component("header-back", HeaderBack);
 app.component("loader-iguana", LoaderIguana);
+app.component("card-folder", CardFolder);
+app.component("spinner", Spinner);
 
 app.mount("#app");

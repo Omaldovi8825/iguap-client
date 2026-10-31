@@ -85,6 +85,7 @@
                 >
                   <card-folder
                     :expediente="expediente"
+                    :url="`./expediente.html?id=${expediente._id}`"
                     @guardar-expediente="guardarEdicion"
                     @eliminar-expediente="eliminarExpediente"
                   ></card-folder>

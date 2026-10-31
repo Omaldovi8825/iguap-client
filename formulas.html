@@ -27,7 +27,7 @@
   </head>
   <body>
     <div id="app" v-cloak>
-      <loader-iguana v-if="isLoading"></loader-iguana>
+      <loader-iguana v-if="initialLoad"></loader-iguana>
       <template v-else>
         <header-back heading="Fórmulas"></header-back>
         <div class="container pt-3">
@@ -78,46 +78,48 @@
               </div>
             </div>
             <div class="col mb-3">
-              <div v-if="!!filteredFoldersFormulas.length" class="row">
-                <div class="col-12">
-                  <h2 class="fs-4 color_iguapp_green">Folders</h2>
-                </div>
-                <div
-                  v-for="folder in filteredFoldersFormulas"
-                  :key="folder._id"
-                  class="col-6 col-md-4 col-lg-3 mb-3"
-                >
-                  <a
-                    :href="`./folder-formula.html?id_folder=${folder._id}`"
-                    class="border rounded-3 p-3 d-flex flex-column align-items-center text-decoration-none text-dark bg-light-subtle"
-                  >
-                    <i
-                      class="bi bi-folder-fill display-4 text-warning mb-2"
-                    ></i>
-                    <span>{{ folder.nombre }}</span>
-                  </a>
-                </div>
+              <div v-if="isLoading" class="d-flex justify-content-center">
+                <spinner size="2rem"></spinner>
               </div>
-              <div v-if="!!filteredFormulasSingle.length" class="row">
-                <div class="col-12">
-                  <h2 class="fs-4 color_iguapp_green">Fórmulas</h2>
-                </div>
-                <div
-                  v-for="formula in filteredFormulasSingle"
-                  :key="formula._id"
-                  class="col-6 col-md-4 col-lg-3 mb-3"
-                >
-                  <a
-                    :href="`./formula.html?id=${formula._id}`"
-                    class="border rounded-3 p-3 d-flex flex-column align-items-center text-decoration-none text-dark bg-light-subtle"
+              <template v-else>
+                <div v-if="!!filteredFoldersFormulas.length" class="row">
+                  <div class="col-12">
+                    <h2 class="fs-4 color_iguapp_green">Folders</h2>
+                  </div>
+                  <div
+                    v-for="folder in filteredFoldersFormulas"
+                    :key="folder._id"
+                    class="col-6 col-md-4 col-lg-3 mb-3"
                   >
-                    <i
-                      class="bi bi-calculator display-4 mb-2 color_iguapp_green"
-                    ></i>
-                    <span>{{ formula.nombre }}</span>
-                  </a>
+                    <card-folder
+                      :expediente="folder"
+                      :url="`./folder-formula.html?id_folder=${folder._id}`"
+                      @guardar-expediente="guardarEdicion"
+                      @eliminar-expediente="eliminarFolder"
+                    ></card-folder>
+                  </div>
                 </div>
-              </div>
+                <div v-if="!!filteredFormulasSingle.length" class="row">
+                  <div class="col-12">
+                    <h2 class="fs-4 color_iguapp_green">Fórmulas</h2>
+                  </div>
+                  <div
+                    v-for="formula in filteredFormulasSingle"
+                    :key="formula._id"
+                    class="col-6 col-md-4 col-lg-3 mb-3"
+                  >
+                    <a
+                      :href="`./formula.html?id=${formula._id}`"
+                      class="border rounded-3 p-3 d-flex flex-column align-items-center text-decoration-none text-dark bg-light-subtle"
+                    >
+                      <i
+                        class="bi bi-calculator display-4 mb-2 color_iguapp_green"
+                      ></i>
+                      <span>{{ formula.nombre }}</span>
+                    </a>
+                  </div>
+                </div>
+              </template>
             </div>
           </div>
         </div>
