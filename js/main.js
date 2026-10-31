@@ -1,12 +1,12 @@
 import { Axiomi } from "./api.js";
+import LoaderIguana from "./components/loader_iguana.js";
 const { createApp, ref, onMounted } = Vue;
 
 const app = createApp({
   setup() {
-    const isLoading = ref(false);
+    const isLoading = ref(true);
 
     const startLoading = async () => {
-      isLoading.value = true;
       try {
         await Axiomi.load();
       } catch (error) {
@@ -26,5 +26,7 @@ const app = createApp({
     };
   },
 });
+
+app.component("loader-iguana", LoaderIguana);
 
 app.mount("#app");

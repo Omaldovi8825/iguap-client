@@ -1,9 +1,14 @@
 import { Axiomi } from "./api.js";
 import HeaderBack from "./components/headerBack.js";
+import LoaderIguana from "./components/loader_iguana.js";
+import CardFolder from "./components/cardFolder.js";
+import Spinner from "./components/spinner.js";
 const { createApp, ref, onMounted, reactive, watch, computed, nextTick } = Vue;
 
 const app = createApp({
   setup() {
+    const initialLoad = ref(true);
+    const isLoading = ref(false);
     const form = ref({
       nombre: {
         value: "",
@@ -11,11 +16,6 @@ const app = createApp({
       },
     });
     const search = ref("");
-    const folderToEdit = reactive({
-      id: null,
-      nombre: "",
-    });
-    const isLoading = ref(false);
     const expedientes = ref([]);
 
     const getExpedientes = async () => {
@@ -56,7 +56,11 @@ const app = createApp({
     };
 
     const eliminarExpediente = async (id) => {
+      if (!confirm("¿Estás seguro de querer eliminar este expediente?")) {
+        return;
+      }
       try {
+        isLoading.value = true;
         const { error } = await Axiomi.delete(`expedientes/${id}`);
         if (!error) {
           await getExpedientes();
@@ -66,40 +70,28 @@ const app = createApp({
       } catch (error) {
         console.error(error);
         alert("Error al eliminar el expediente");
+      } finally {
+        isLoading.value = false;
       }
     };
 
-    const modoEdicion = (id) => {
-      folderToEdit.id = id;
-      folderToEdit.nombre = expedientes.value.find(
-        (expediente) => expediente._id === id,
-      ).nombre;
-    };
-
-    const limpiarFolderToEdit = () => {
-      folderToEdit.id = null;
-      folderToEdit.nombre = "";
-    };
-
-    const guardarEdicion = async () => {
+    const guardarEdicion = async (id, nombre) => {
       try {
-        const { error } = await Axiomi.put(`expedientes/${folderToEdit.id}`, {
-          nombre: folderToEdit.nombre,
+        isLoading.value = true;
+        const { error } = await Axiomi.put(`expedientes/${id}`, {
+          nombre: nombre,
         });
         if (!error) {
           await getExpedientes();
-          limpiarFolderToEdit();
         } else {
           alert("Error al guardar la edición");
         }
       } catch (error) {
         console.error(error);
         alert("Error al guardar la edición");
+      } finally {
+        isLoading.value = false;
       }
-    };
-
-    const cancelarEdicion = () => {
-      limpiarFolderToEdit();
     };
 
     //computed
@@ -114,32 +106,31 @@ const app = createApp({
     //Life cycle
     onMounted(async () => {
       try {
-        isLoading.value = true;
+        initialLoad.value = true;
         await getExpedientes();
+        initialLoad.value = false;
       } catch (error) {
         alert("Error al obtener los expedientes");
         console.error(error);
-      } finally {
-        isLoading.value = false;
       }
     });
 
     return {
+      initialLoad,
       form,
       search,
-      expedientes,
       isLoading,
-      folderToEdit,
       filteredExpedientes,
       createExpediente,
       eliminarExpediente,
-      modoEdicion,
       guardarEdicion,
-      cancelarEdicion,
     };
   },
 });
 
 app.component("header-back", HeaderBack);
+app.component("loader-iguana", LoaderIguana);
+app.component("card-folder", CardFolder);
+app.component("spinner", Spinner);
 
 app.mount("#app");

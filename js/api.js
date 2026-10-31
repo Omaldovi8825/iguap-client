@@ -1,6 +1,11 @@
+const PROD_URL = "https://iguapp-server.onrender.com/";
+const LOCAL_URL = "http://localhost:3000/";
+
 export class Axiomi {
-  static baseUrl = "https://iguapp-server.onrender.com/";
-  // static baseUrl = "http://localhost:3000/";
+  static baseUrl =
+    location.hostname === "localhost" || location.hostname === "127.0.0.1"
+      ? LOCAL_URL
+      : PROD_URL;
   static baseApiUrl = `${this.baseUrl}api/`;
 
   static async load() {

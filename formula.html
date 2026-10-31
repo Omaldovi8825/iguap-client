@@ -46,18 +46,31 @@
                     <span>Eliminar</span>
                   </div>
                 </button>
-                <button
-                  type="submit"
-                  class="btn btn-sm btn-iguapp"
-                  form="form-formula"
-                  :disabled="!enableSubmitFormula || isLoading"
-                >
-                  <spinner v-if="isLoading"></spinner>
-                  <div v-else class="d-flex align-items-center gap-2">
-                    <i class="bi bi-floppy"></i>
-                    <span>Guardar</span>
-                  </div>
-                </button>
+                <div class="d-flex gap-2">
+                  <a
+                    v-if="modoEdicion"
+                    :href="`./cotizacion.html?id_formula=${formulaDB._id}`"
+                    class="btn btn-sm btn-outline-secondary"
+                    :disabled="isLoading"
+                  >
+                    <div class="d-flex align-items-center gap-2">
+                      <i class="bi bi-cash-coin"></i>
+                      <span>Cotizar</span>
+                    </div>
+                  </a>
+                  <button
+                    type="submit"
+                    class="btn btn-sm btn-iguapp"
+                    form="form-formula"
+                    :disabled="!enableSubmitFormula || isLoading"
+                  >
+                    <spinner v-if="isLoading"></spinner>
+                    <div v-else class="d-flex align-items-center gap-2">
+                      <i class="bi bi-floppy"></i>
+                      <span>Guardar</span>
+                    </div>
+                  </button>
+                </div>
               </div>
               <form id="form-formula" @submit.prevent="onSubmitFormula">
                 <div class="mb-3">
