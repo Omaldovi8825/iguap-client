@@ -50,27 +50,29 @@
                     <tr>
                       <th>Cotización</th>
                       <th>Fecha</th>
+                      <th>Precio</th>
                       <th></th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr
-                      v-for="cotizacion in cotizaciones"
-                      :key="cotizacion._id"
+                      v-for="cotizacion in contizacionesTabla"
+                      :key="cotizacion.id"
                     >
                       <td>{{ cotizacion.nombre }}</td>
-                      <td>{{ formatDate(cotizacion.createdAt) }}</td>
+                      <td>{{ cotizacion.fecha }}</td>
+                      <td>{{ cotizacion.precio }}</td>
                       <td>
                         <div class="d-flex justify-content-end gap-2">
                           <a
-                            :href="`./cotizacion.html?id=${cotizacion._id}`"
+                            :href="`./cotizacion.html?id=${cotizacion.id}`"
                             class="btn btn-sm btn-outline-iguapp"
                           >
                             <i class="bi bi-eye"></i>
                           </a>
                           <button
                             class="btn btn-sm btn-outline-danger"
-                            @click="eliminarCotizacion(cotizacion._id)"
+                            @click="eliminarCotizacion(cotizacion.id)"
                           >
                             <i class="bi bi-trash"></i>
                           </button>
