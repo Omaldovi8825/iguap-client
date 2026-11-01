@@ -40,14 +40,14 @@ const app = createApp({
     };
 
     const eliminarCotizacion = async (idCotizacion) => {
-      if (!confirm("¿Estás seguro de querer eliminar esta cotización?")) {
+      if (!confirm("¿Estás seguro de eliminar esta cotización?")) {
         return;
       }
       try {
         isLoading.value = true;
         const { error } = await Axiomi.delete(`cotizaciones/${idCotizacion}`);
         if (!error) {
-          await getExpediente();
+          await getCotizacionesExpediente();
         }
       } catch (error) {
         console.error(error);

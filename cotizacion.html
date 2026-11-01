@@ -29,7 +29,7 @@
       <loader-iguana v-if="initialLoad"></loader-iguana>
       <template v-else>
         <header-back :heading="expedienteDB?.nombre"></header-back>
-        <div class="container pt-3">
+        <div class="container pt-3 mb-5">
           <div class="row">
             <div class="col-12 col-md-4 mb-3">
               <form class="row">
@@ -150,7 +150,9 @@
                           <button
                             type="button"
                             class="btn btn-sm btn-outline-iguapp"
-                            @click="abrirModalEliminarMaterial(index)"
+                            @click="abrirModalEditarMaterial(index)"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalMaterial"
                           >
                             <i class="bi bi-pencil"></i>
                           </button>
@@ -200,201 +202,39 @@
                   </tbody>
                 </table>
               </div>
+              <div>
+                <button class="btn btn-iguapp" :disabled="!enableSave" @click="guardarCotizacion">
+                  Guardar
+                  <i class="bi bi-save ms-2"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </template>
-    </div>
-    <!-- <div id="app" v-cloak class="container">
-      <header-back :heading="heading"></header-back>
-      <div v-if="isLoading" class="text-center my-3">
-        <div class="spinner-border text-secondary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
-      <div v-else class="row">
-        <div class="col-12 col-md-4 mb-3">
-          <form class="row">
-            <div class="col-12 mb-3">
-              <label class="form-label">Nombre</label>
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                placeholder="Ventana sencilla..."
-                v-model="formCotizacion.nombre"
-              />
-            </div>
-            <div class="col-12 mb-3">
-              <label class="form-label">Fórmula</label>
-              <auto-complete
-                :model-value="formCotizacion.formula.nombre"
-                :items="formulasFiltradas"
-                @update:model-value="onFormulaInput"
-                @select-item="seleccionarFormula"
-              ></auto-complete>
-            </div>
-            <div class="col-6 mb-3">
-              <label class="form-label">Ancho (cm)</label>
-              <input
-                type="number"
-                step="0.5"
-                min="0.5"
-                class="form-control form-control-sm"
-                v-model="formCotizacion.ancho"
-              />
-            </div>
-            <div class="col-6 mb-3">
-              <label class="form-label">Alto (cm)</label>
-              <input
-                type="number"
-                step="1"
-                min="1"
-                class="form-control form-control-sm"
-                v-model="formCotizacion.alto"
-              />
-            </div>
-            <div class="col-6 mb-3">
-              <label class="form-label">Mano de obra (%)</label>
-              <input
-                type="number"
-                step="0.5"
-                min="0.5"
-                class="form-control form-control-sm"
-                v-model="formCotizacion.manoObra"
-              />
-            </div>
-            <div class="col-6 mb-3">
-              <label class="form-label">Extras ($)</label>
-              <input
-                type="number"
-                step="0.5"
-                min="0.5"
-                class="form-control form-control-sm"
-                v-model="formCotizacion.extras"
-              />
-            </div>
-          </form>
-          <div class="row bg-secondary-subtle py-3 rounded">
-            <div class="col-12">
-              <form-material
-                :materiales-db="materialesDB"
-                @agregar="agregarMaterial"
-              ></form-material>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="table-responsive">
-            <table class="table table-sm">
-              <thead>
-                <tr>
-                  <th colspan="9">Materiales</th>
-                </tr>
-                <tr>
-                  <th>#id</th>
-                  <th>Nombre</th>
-                  <th>Cantidad</th>
-                  <th>Fórmula ancho</th>
-                  <th>Fórmula alto</th>
-                  <th>Ancho</th>
-                  <th>Alto</th>
-                  <th>Precio</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="(material, index) in cotizacion.materiales"
-                  :key="index"
-                >
-                  <td>{{ material.id }}</td>
-                  <td>{{ material.nombre }}</td>
-                  <td>
-                    <input
-                      type="number"
-                      step="1"
-                      min="1"
-                      class="form-control form-control-sm"
-                      v-model="formCotizacion.materiales[index].cantidad"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      class="form-control form-control-sm"
-                      v-model="formCotizacion.materiales[index].formulas.ancho"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      class="form-control form-control-sm"
-                      v-model="formCotizacion.materiales[index].formulas.alto"
-                    />
-                  </td>
-                  <td>{{ material.medidas.ancho }}</td>
-                  <td>{{ material.medidas.alto }}</td>
-                  <td>{{ formatMoney(material.precio) }}</td>
-                  <td>
-                    <button
-                      type="button"
-                      class="btn btn-outline-danger btn-sm"
-                      @click="eliminarMaterial(index)"
-                    >
-                      <i class="bi bi-trash"></i>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="table-responsive">
-            <table class="table table-sm">
-              <thead>
-                <tr>
-                  <th colspan="2">Desglose</th>
-                </tr>
-                <tr>
-                  <th>Concepto</th>
-                  <th>Costo</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Materiales</td>
-                  <td>{{ formatMoney(cotizacion.desglose.materiales) }}</td>
-                </tr>
-                <tr>
-                  <td>Mano de obra</td>
-                  <td>{{ formatMoney(cotizacion.desglose.manoObra) }}</td>
-                </tr>
-                <tr>
-                  <td>Extras</td>
-                  <td>{{ formatMoney(cotizacion.desglose.extras) }}</td>
-                </tr>
-                <tr>
-                  <td class="fw-bold">Total</td>
-                  <td class="fw-bold">
-                    {{ formatMoney(cotizacion.desglose.total) }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="text-end mb-3">
-            <button
-              type="button"
-              class="btn btn-outline-primary"
-              :disabled="!puedeGuardar"
-              @click="guardarCotizacion"
-            >
-              Guardar
-            </button>
-          </div>
-        </div>
-      </div>
-    </div> -->
 
+        <button
+          type="button"
+          class="btn btn-iguapp rounded-circle position-fixed bottom-0 end-0 m-4 d-flex align-items-center justify-content-center p-0"
+          style="width: 3.5rem; height: 3.5rem"
+          data-bs-toggle="modal"
+          data-bs-target="#modalMaterial"
+        >
+          <i class="bi bi-tools fs-4"></i>
+        </button>
+      </template>
+
+      <modal-material
+        ref="modalMaterial"
+        :materiales-db="materialesDB"
+        @submit-material="onSubmitMaterial"
+      ></modal-material>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
     <script src="./js/cotizacion.js" type="module"></script>
   </body>
 </html>
