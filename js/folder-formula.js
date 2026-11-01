@@ -8,13 +8,27 @@ const id_folder = new URLSearchParams(window.location.search).get("id_folder");
 const app = createApp({
   setup() {
     const isLoading = ref(true);
-    const folder = ref(null);
+    const folderDB = ref(null);
+    const formulasDB = ref([]);
 
     //Methods
     const getFolderFormula = async () => {
       const { error, data } = await Axiomi.get(`folders-formulas/${id_folder}`);
       if (!error) {
-        folder.value = data;
+        folderDB.value = data;
+      } else {
+        throw new Error(data);
+      }
+    };
+
+    const getFormulasDB = async () => {
+      const { error, data } = await Axiomi.get(
+        `formulas?id_folder=${id_folder}`,
+      );
+      if (!error) {
+        formulasDB.value = data;
+      } else {
+        throw new Error(data);
       }
     };
 
@@ -23,7 +37,7 @@ const app = createApp({
         isLoading.value = true;
         const { error } = await Axiomi.post(`formulas/${id_formula}/clone`);
         if (!error) {
-          await getFolderFormula();
+          await getFormulasDB();
         }
       } catch (error) {
         console.log(error);
@@ -39,6 +53,7 @@ const app = createApp({
     onMounted(async () => {
       try {
         await getFolderFormula();
+        await getFormulasDB();
       } catch (error) {
         console.log(error);
         alert("Error al cargar el folder de fórmulas");
@@ -49,7 +64,8 @@ const app = createApp({
 
     return {
       isLoading,
-      folder,
+      folderDB,
+      formulasDB,
       clonarFormula,
     };
   },

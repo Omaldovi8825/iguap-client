@@ -27,42 +27,72 @@
   </head>
 
   <body>
-    <div id="app" v-cloak class="container">
-      <header-back :heading="expediente.nombre"></header-back>
-      <div class="row">
-        <div class="col-12 col-md-4 mb-3">
-          <a
+    <div id="app" v-cloak>
+      <loader-iguana v-if="initialLoad"></loader-iguana>
+      <template v-else>
+        <header-back :heading="expediente.nombre"></header-back>
+        <div class="container pt-3">
+          <div class="row">
+            <div class="col">
+              <!-- <a
             :href="`./cotizacion.html?id_expediente=${expediente._id}`"
             class="btn btn-outline-primary w-100"
             >Nueva cotización</a
-          >
-        </div>
-        <div class="col mb-3">
-          <div class="table-responsive">
-            <table class="table table-sm">
-              <thead>
-                <tr>
-                  <th>Cotizaciones</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="cotizacion in expediente.cotizaciones"
-                  :key="cotizacion._id"
-                >
-                  <td>{{ cotizacion.nombre }}</td>
-                  <td>
-                    <button class="btn btn-sm btn-outline-primary">
-                      <i class="bi bi-eye"></i>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          > -->
+            </div>
+            <div class="col-12 col-md-6">
+              <div v-if="isLoading" class="d-flex justify-content-center">
+                <spinner size="2rem"></spinner>
+              </div>
+              <div v-else class="table-responsive">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Cotización</th>
+                      <th>Fecha</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="cotizacion in cotizaciones"
+                      :key="cotizacion._id"
+                    >
+                      <td>{{ cotizacion.nombre }}</td>
+                      <td>{{ formatDate(cotizacion.createdAt) }}</td>
+                      <td>
+                        <div class="d-flex justify-content-end gap-2">
+                          <a
+                            :href="`./cotizacion.html?id_cotizacion=${cotizacion._id}`"
+                            class="btn btn-sm btn-outline-iguapp"
+                          >
+                            <i class="bi bi-eye"></i>
+                          </a>
+                          <button
+                            class="btn btn-sm btn-outline-danger"
+                            @click="eliminarCotizacion(cotizacion._id)"
+                          >
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <a
+                :href="`./cotizacion.html?id_expediente=${expediente._id}`"
+                class="btn btn-iguapp rounded-circle position-fixed bottom-0 end-0 m-4 d-flex align-items-center justify-content-center p-0"
+                style="width: 3.5rem; height: 3.5rem"
+                aria-label="Nueva fórmula"
+              >
+                <i class="bi bi-coin fs-4"></i>
+              </a>
+            </div>
+            <div class="col"></div>
           </div>
         </div>
-      </div>
+      </template>
     </div>
 
     <script src="./js/expediente.js" type="module"></script>

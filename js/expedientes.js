@@ -32,7 +32,7 @@ const app = createApp({
       }
       try {
         isLoading.value = true;
-        const { error, data } = await Axiomi.post("expedientes", {
+        const { error } = await Axiomi.post("expedientes", {
           nombre: form.value.nombre.value,
         });
 

@@ -46,6 +46,14 @@ export const formatMoney = (value) => {
   }).format(value);
 };
 
+export const formatDate = (date) => {
+  return new Date(date).toLocaleDateString("es-MX", {
+    year: "2-digit",
+    month: "2-digit",
+    day: "2-digit",
+  });
+};
+
 export const cmAm = (cm) => cm / 100;
 
 export const aplicarFormula = (valor, formula) => {

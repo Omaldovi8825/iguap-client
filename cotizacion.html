@@ -25,7 +25,187 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   </head>
   <body>
-    <div id="app" v-cloak class="container">
+    <div id="app" v-cloak>
+      <loader-iguana v-if="initialLoad"></loader-iguana>
+      <template v-else>
+        <header-back :heading="expedienteDB?.nombre"></header-back>
+        <div class="container pt-3">
+          <div class="row">
+            <div class="col-12 col-md-4 mb-3">
+              <form class="row">
+                <div class="col-12 mb-3">
+                  <label class="form-label">Nombre</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm"
+                    placeholder="Ventana sencilla..."
+                    v-model="formCotizacion.nombre"
+                  />
+                </div>
+                <div class="col-12 mb-3">
+                  <label class="form-label">Folder fórmula</label>
+                  <select
+                    class="form-select form-select-sm"
+                    v-model="formCotizacion.formula.id_folder"
+                  >
+                    <option value="0">Sin folder</option>
+                    <option
+                      v-for="folder in foldersFormulasDB"
+                      :value="folder._id"
+                      :key="folder._id"
+                    >
+                      {{ folder.nombre }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-12 mb-3">
+                  <label class="form-label">Fórmula</label>
+                  <select
+                    class="form-select form-select-sm"
+                    v-model="formCotizacion.formula.id"
+                  >
+                    <option
+                      v-for="formula in formulasDB"
+                      :key="formula._id"
+                      :value="formula._id"
+                    >
+                      {{ formula.nombre }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-6 mb-3">
+                  <label class="form-label">Ancho (cm)</label>
+                  <input
+                    type="number"
+                    step="0.5"
+                    min="0.5"
+                    class="form-control form-control-sm"
+                    v-model="formCotizacion.ancho"
+                  />
+                </div>
+                <div class="col-6 mb-3">
+                  <label class="form-label">Alto (cm)</label>
+                  <input
+                    type="number"
+                    step="1"
+                    min="1"
+                    class="form-control form-control-sm"
+                    v-model="formCotizacion.alto"
+                  />
+                </div>
+                <div class="col-6 mb-3">
+                  <label class="form-label">Mano de obra (%)</label>
+                  <input
+                    type="number"
+                    step="0.5"
+                    min="0.5"
+                    class="form-control form-control-sm"
+                    v-model="formCotizacion.manoObra"
+                  />
+                </div>
+                <div class="col-6 mb-3">
+                  <label class="form-label">Extras ($)</label>
+                  <input
+                    type="number"
+                    step="0.5"
+                    min="0.5"
+                    class="form-control form-control-sm"
+                    v-model="formCotizacion.extras"
+                  />
+                </div>
+              </form>
+            </div>
+            <div class="col mb-3">
+              <div class="table-responsive">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th colspan="8" class="text-center">Materiales</th>
+                    </tr>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Cantidad</th>
+                      <th>Fórmula ancho</th>
+                      <th>Fórmula alto</th>
+                      <th>Ancho</th>
+                      <th>Alto</th>
+                      <th>Precio</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(material, index) in cotizacion.materiales"
+                      :key="index"
+                    >
+                      <td>{{ material.nombre }}</td>
+                      <td>{{ material.cantidad }}</td>
+                      <td>{{ material.formulas.ancho }}</td>
+                      <td>{{ material.formulas.alto }}</td>
+                      <td>{{ material.medidas.ancho }}</td>
+                      <td>{{ material.medidas.alto }}</td>
+                      <td>{{ formatMoney(material.precio) }}</td>
+                      <td>
+                        <div class="d-flex justify-content-end gap-2">
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-iguapp"
+                            @click="abrirModalEliminarMaterial(index)"
+                          >
+                            <i class="bi bi-pencil"></i>
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-danger"
+                            @click="eliminarMaterial(index)"
+                          >
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th colspan="8" class="text-center">Desglose</th>
+                    </tr>
+                    <tr>
+                      <th>Concepto</th>
+                      <th>Costo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Materiales</td>
+                      <td>{{ formatMoney(cotizacion.desglose.materiales) }}</td>
+                    </tr>
+                    <tr>
+                      <td>Mano de obra</td>
+                      <td>{{ formatMoney(cotizacion.desglose.manoObra) }}</td>
+                    </tr>
+                    <tr>
+                      <td>Extras</td>
+                      <td>{{ formatMoney(cotizacion.desglose.extras) }}</td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold">Total</td>
+                      <td class="fw-bold">
+                        {{ formatMoney(cotizacion.desglose.total) }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+    <!-- <div id="app" v-cloak class="container">
       <header-back :heading="heading"></header-back>
       <div v-if="isLoading" class="text-center my-3">
         <div class="spinner-border text-secondary" role="status">
@@ -213,7 +393,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <script src="./js/cotizacion.js" type="module"></script>
   </body>
