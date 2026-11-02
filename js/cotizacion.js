@@ -25,9 +25,12 @@ const app = createApp({
     const materialesDB = ref([]);
     const foldersFormulasDB = ref([]);
     const formulasDB = ref([]);
+    const cotizacionDB = ref(null);
+
     const modalMaterial = ref(null);
 
     const formCotizacion = reactive({
+      id_expediente: idExpediente,
       nombre: "",
       formula: {
         id_folder: "",
@@ -62,6 +65,7 @@ const app = createApp({
     };
 
     const getFormulasDB = async () => {
+      if (formCotizacion.formula.id_folder === "") return;
       try {
         const idFolder = formCotizacion.formula.id_folder;
         const request =
@@ -82,13 +86,30 @@ const app = createApp({
     const getCotizacionDB = async () => {
       const { error, data } = await Axiomi.get(`cotizaciones/${idCotizacion}`);
       if (error) throw new Error(data);
+
+      cotizacionDB.value = data;
+
+      const {
+        id_expediente,
+        nombre,
+        ancho,
+        alto,
+        manoObra,
+        extras,
+        materiales,
+      } = data;
       Object.assign(formCotizacion, {
-        ...data,
+        id_expediente,
+        nombre,
         formula: {
-          id_folder:
-            data.formula.id_folder === null ? "0" : data.formula.id_folder,
-          id: data.formula.id,
+          id_folder: "",
+          id: "",
         },
+        ancho,
+        alto,
+        manoObra,
+        extras,
+        materiales,
       });
     };
 
@@ -275,17 +296,15 @@ const app = createApp({
     });
 
     const enableSave = computed(() => {
-      const { nombre, formula, ancho, alto, materiales } = formCotizacion;
-      return nombre && formula.id && ancho && alto && materiales.length > 0;
+      const { nombre, ancho, alto, materiales } = formCotizacion;
+      return nombre && ancho && alto && materiales.length > 0;
     });
 
     //Watchers
     watch(
       () => formCotizacion.formula.id_folder,
       (newVal) => {
-        if (!initialLoad.value) {
-          formCotizacion.formula.id = "";
-        }
+        formCotizacion.formula.id = "";
         getFormulasDB();
       },
     );
@@ -312,6 +331,7 @@ const app = createApp({
         }
         await getExpediente();
       } catch (error) {
+        console.log(error);
         alert("Error al obtener los datos de la cotización");
       } finally {
         initialLoad.value = false;
