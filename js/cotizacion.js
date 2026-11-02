@@ -28,6 +28,7 @@ const app = createApp({
     const cotizacionDB = ref(null);
 
     const modalMaterial = ref(null);
+    const tbodyMateriales = ref(null);
 
     const formCotizacion = reactive({
       id_expediente: idExpediente,
@@ -232,6 +233,26 @@ const app = createApp({
       }
     };
 
+    const initSortable = () => {
+      if (!tbodyMateriales.value) return;
+      Sortable.create(tbodyMateriales.value, {
+        handle: ".drag-handle",
+        animation: 150,
+        delay: 120,
+        delayOnTouchOnly: true,
+        touchStartThreshold: 4,
+        onEnd(evt) {
+          const { oldIndex, newIndex, item, from } = evt;
+          if (oldIndex === newIndex) return;
+          const refChild =
+            from.children[oldIndex + (oldIndex > newIndex ? 1 : 0)];
+          from.insertBefore(item, refChild ?? null);
+          const [moved] = formCotizacion.materiales.splice(oldIndex, 1);
+          formCotizacion.materiales.splice(newIndex, 0, moved);
+        },
+      });
+    };
+
     // Computed properties
     const modoEdicion = computed(() => {
       return idCotizacion !== null;
@@ -335,11 +356,14 @@ const app = createApp({
         alert("Error al obtener los datos de la cotización");
       } finally {
         initialLoad.value = false;
+        await nextTick();
+        initSortable();
       }
     });
 
     return {
       modalMaterial,
+      tbodyMateriales,
       initialLoad,
       materialesDB,
       expedienteDB,

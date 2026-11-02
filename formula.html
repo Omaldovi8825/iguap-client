@@ -96,16 +96,8 @@
                       v-for="(material, index) in formFormula.materiales"
                       :key="index"
                     >
-                      <td
-                        class="drag-handle align-middle"
-                        style="
-                          cursor: grab;
-                          touch-action: none;
-                          user-select: none;
-                          min-width: 2.75rem;
-                        "
-                      >
-                        <i class="bi bi-grip-vertical"></i>
+                      <td class="drag-handle draggable-row align-middle">
+                        <i class="bi bi-grip-vertical fs-5"></i>
                       </td>
                       <td>{{ material.nombre }}</td>
                       <td>{{ material.cantidad }}</td>

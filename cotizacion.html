@@ -28,6 +28,7 @@
     <link rel="stylesheet" href="./css/main.css" />
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
   </head>
   <body>
     <div id="app" v-cloak>
@@ -125,9 +126,10 @@
                 <table class="table table-sm">
                   <thead>
                     <tr>
-                      <th colspan="8">Materiales</th>
+                      <th colspan="9">Materiales</th>
                     </tr>
                     <tr>
+                      <th></th>
                       <th>Nombre</th>
                       <th>Cantidad</th>
                       <th>Fórmula ancho</th>
@@ -138,11 +140,14 @@
                       <th></th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody ref="tbodyMateriales">
                     <tr
                       v-for="(material, index) in cotizacion.materiales"
                       :key="index"
                     >
+                      <td class="drag-handle draggable-row align-middle">
+                        <i class="bi bi-grip-vertical fs-5"></i>
+                      </td>
                       <td>{{ material.nombre }}</td>
                       <td>{{ material.cantidad }}</td>
                       <td>{{ material.formulas.ancho }}</td>
