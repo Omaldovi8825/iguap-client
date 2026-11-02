@@ -35,7 +35,7 @@
       <loader-iguana v-if="initialLoad"></loader-iguana>
       <template v-else>
         <header-back heading="Fórmulas"></header-back>
-        <div class="container pt-3">
+        <div class="container pt-3 mb-5">
           <div class="row">
             <div class="col-12 col-md-4 mb-3">
               <form @submit.prevent="createFolder">
@@ -65,11 +65,6 @@
                   <div class="invalid-feedback">{{ form.nombre.error }}</div>
                 </div>
               </form>
-              <div class="mb-3">
-                <a href="./formula.html" class="btn btn-iguapp w-100">
-                  <span>Nueva fórmula</span>
-                </a>
-              </div>
               <div class="input-group">
                 <span class="input-group-text">
                   <i class="bi bi-search"></i>
@@ -128,6 +123,15 @@
             </div>
           </div>
         </div>
+
+        <a
+          href="./formula.html"
+          class="btn btn-iguapp rounded-circle position-fixed bottom-0 end-0 m-4 d-flex align-items-center justify-content-center p-0"
+          style="width: 3.5rem; height: 3.5rem"
+          aria-label="Nueva fórmula"
+        >
+          <i class="bi bi-plus-slash-minus fs-4"></i>
+        </a>
       </template>
     </div>
 

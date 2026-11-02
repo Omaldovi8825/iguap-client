@@ -4,6 +4,8 @@
 
 :root {
   --iguapp-green: #2f8a2c;
+  --iguapp-dark-green: #123f17;
+  --iguapp-light-green: #aef326;
   --iguapp-body: #f7fbf5;
 }
 
@@ -77,6 +79,14 @@ select {
   background-color: var(--iguapp-green);
 }
 
+.bg_iguapp_dark_green {
+  background-color: var(--iguapp-dark-green);
+}
+
 .color_iguapp_green {
   color: var(--iguapp-green);
+}
+
+.color_iguapp_light_green {
+  color: var(--iguapp-light-green);
 }

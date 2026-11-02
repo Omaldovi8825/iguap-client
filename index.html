@@ -26,6 +26,12 @@
     />
     <!-- custom CSS -->
     <link rel="stylesheet" href="./css/main.css" />
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /> -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600&display=swap"
+      rel="stylesheet"
+    />
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <!-- <script src="./js/Vue.js"></script> -->
@@ -35,17 +41,26 @@
     <div id="app" v-cloak>
       <loader-iguana v-if="isLoading"></loader-iguana>
       <template v-else>
-        <div>
+        <div
+          class="d-flex justify-content-between align-items-center p-3 bg_iguapp_dark_green"
+        >
+          <h1
+            class="mb-0 color_iguapp_light_green"
+            style="font-family: Fredoka, sans-serif; letter-spacing: 0.1em"
+          >
+            Iguapp
+          </h1>
           <img
-            src="./assets/images/iguapp-header.svg"
+            src="./assets/images/iguapp-circle.svg"
             alt="iguapp"
             class="img-fluid"
+            width="50px"
           />
         </div>
-        <div class="container">
+        <div class="container pt-3">
           <div class="row">
             <div class="col"></div>
-            <div class="col-12 col-md-6 pt-3">
+            <div class="col-12 col-md-6">
               <div class="mb-3">
                 <a
                   href="./formulas.html"
