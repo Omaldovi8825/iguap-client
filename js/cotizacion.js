@@ -158,7 +158,25 @@ const app = createApp({
     };
 
     const actualizarCotizacion = async () => {
-      return Axiomi.put(`cotizaciones/${idCotizacion}`, formCotizacion);
+      const { materiales, ...resto } = formCotizacion;
+
+      const materialesFormatted = materiales.map((material) => {
+        const materialEncontrado = materialesDB.value.find(
+          (m) => m._id === material.id,
+        );
+
+        return {
+          ...material,
+          precio: material.precio || materialEncontrado.precio,
+        };
+      });
+
+      const cotizacionFormatted = {
+        ...resto,
+        materiales: materialesFormatted,
+      };
+
+      return Axiomi.put(`cotizaciones/${idCotizacion}`, cotizacionFormatted);
     };
 
     const guardarCotizacion = async () => {
