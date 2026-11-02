@@ -35,7 +35,7 @@
     <div id="app" v-cloak>
       <loader-iguana v-if="initialLoad"></loader-iguana>
       <template v-else>
-        <header-back heading="Expedientes"></header-back>
+        <header-back heading="Cotizaciones"></header-back>
         <div class="container pt-3">
           <div class="row">
             <div class="col-12 col-md-4 mb-3">
@@ -99,6 +99,14 @@
             </div>
           </div>
         </div>
+        <a
+          href="./cotizacion.html"
+          class="btn btn-iguapp rounded-circle position-fixed bottom-0 end-0 m-4 d-flex align-items-center justify-content-center p-0"
+          style="width: 3.5rem; height: 3.5rem"
+          aria-label="Nueva cotización"
+        >
+          <i class="bi bi-coin fs-4"></i>
+        </a>
       </template>
     </div>
 

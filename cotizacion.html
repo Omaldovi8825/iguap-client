@@ -34,12 +34,12 @@
     <div id="app" v-cloak>
       <loader-iguana v-if="initialLoad"></loader-iguana>
       <template v-else>
-        <header-back :heading="expedienteDB?.nombre"></header-back>
+        <header-back :heading="heading"></header-back>
         <div class="container pt-3 mb-5">
           <div class="row">
             <div class="col-12 col-md-4 mb-3">
               <form class="row">
-                <div class="col-12 mb-3">
+                <div v-if="!isCotizacionExpress" class="col-12 mb-3">
                   <label class="form-label">Nombre</label>
                   <input
                     type="text"
@@ -212,7 +212,7 @@
                   </tbody>
                 </table>
               </div>
-              <div>
+              <div v-if="!isCotizacionExpress">
                 <button
                   class="btn btn-outline-iguapp"
                   :disabled="!enableSave"

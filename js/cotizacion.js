@@ -46,9 +46,10 @@ const app = createApp({
 
     // Methods
     const getExpediente = async () => {
-      const { error, data } = await Axiomi.get(
-        `expedientes/${idExpediente || formCotizacion.id_expediente}`,
-      );
+      const id_expediente = idExpediente || formCotizacion.id_expediente;
+      if (!id_expediente) return;
+
+      const { error, data } = await Axiomi.get(`expedientes/${id_expediente}`);
       if (error) throw new Error(data);
       expedienteDB.value = data;
     };
@@ -316,6 +317,14 @@ const app = createApp({
       };
     });
 
+    const isCotizacionExpress = computed(() => {
+      return !idExpediente && !idCotizacion;
+    });
+
+    const heading = computed(() => {
+      return expedienteDB.value?.nombre || "Cotización express";
+    });
+
     const enableSave = computed(() => {
       const { nombre, ancho, alto, materiales } = formCotizacion;
       return nombre && ancho && alto && materiales.length > 0;
@@ -372,6 +381,8 @@ const app = createApp({
       formCotizacion,
       cotizacion,
       enableSave,
+      heading,
+      isCotizacionExpress,
       formatMoney,
       eliminarMaterial,
       abrirModalEditarMaterial,
