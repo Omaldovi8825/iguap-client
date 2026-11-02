@@ -85,22 +85,27 @@ const app = createApp({
     };
 
     // Computed
+
     const materialesFiltrados = computed(() => {
-      const q = search.value.trim().toLowerCase();
-      if (!q) return materialesDB.value;
-      return materialesDB.value.filter((material) =>
-        [
+      const terminos = search.value
+        .trim()
+        .toLowerCase()
+        .split(/\s+/)
+        .filter(Boolean);
+      if (!terminos.length) return materialesDB.value;
+
+      return materialesDB.value.filter((material) => {
+        const campos = [
           material.pieza,
           material.tipo,
           material.categoria,
           material.nombre,
           material.color,
-        ].some((campo) =>
-          String(campo ?? "")
-            .toLowerCase()
-            .includes(q),
-        ),
-      );
+        ].map((campo) => String(campo ?? "").toLowerCase());
+        return terminos.every((termino) =>
+          campos.some((campo) => campo.includes(termino)),
+        );
+      });
     });
 
     const modoEdicion = computed(() => {
