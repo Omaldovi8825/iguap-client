@@ -4,7 +4,7 @@ import LoaderIguana from "./components/loader_iguana.js";
 import Spinner from "./components/spinner.js";
 import ModalMaterial from "./components/modalMaterial.js";
 import { getMateriales, formatNombreLista } from "./utils.js";
-const { createApp, ref, onMounted, reactive, computed } = Vue;
+const { createApp, ref, onMounted, reactive, computed, nextTick } = Vue;
 
 const id_folder = new URLSearchParams(window.location.search).get("id_folder");
 const id_formula = new URLSearchParams(window.location.search).get("id");
@@ -21,6 +21,7 @@ const app = createApp({
       materiales: [],
     });
     const modalMaterial = ref(null);
+    const tbodyMateriales = ref(null);
 
     // Computed properties
     const heading = computed(() => {
@@ -186,6 +187,26 @@ const app = createApp({
       }
     };
 
+    const initSortable = () => {
+      if (!tbodyMateriales.value) return;
+      Sortable.create(tbodyMateriales.value, {
+        handle: ".drag-handle",
+        animation: 150,
+        delay: 120,
+        delayOnTouchOnly: true,
+        touchStartThreshold: 4,
+        onEnd(evt) {
+          const { oldIndex, newIndex, item, from } = evt;
+          if (oldIndex === newIndex) return;
+          const refChild =
+            from.children[oldIndex + (oldIndex > newIndex ? 1 : 0)];
+          from.insertBefore(item, refChild ?? null);
+          const [moved] = formFormula.materiales.splice(oldIndex, 1);
+          formFormula.materiales.splice(newIndex, 0, moved);
+        },
+      });
+    };
+
     // Lifecycle hooks
     onMounted(async () => {
       try {
@@ -201,11 +222,14 @@ const app = createApp({
         alert("Error al obtener los datos");
       } finally {
         firstLoad.value = false;
+        await nextTick();
+        initSortable();
       }
     });
 
     return {
       modalMaterial,
+      tbodyMateriales,
       folderDB,
       formulaDB,
       heading,
