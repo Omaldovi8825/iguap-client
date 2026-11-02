@@ -97,8 +97,18 @@ const app = createApp({
     };
 
     const abrirModalEditarMaterial = (index) => {
-      const material = cotizacion.value.materiales[index];
-      modalMaterial.value.abrirModal({ index, ...material });
+      const material = formCotizacion.materiales[index];
+      const { id, cantidad, formulas } = material;
+      const materialEncontrado = materialesDB.value.find((m) => m._id === id);
+
+      modalMaterial.value.abrirModal({
+        index,
+        id,
+        nombre: formatNombreLista(materialEncontrado),
+        cantidad,
+        ancho: formulas.ancho,
+        alto: formulas.alto,
+      });
     };
 
     const agregarMaterial = (material) => {
@@ -114,15 +124,15 @@ const app = createApp({
     };
 
     const editarMaterial = (material) => {
-      const { id, cantidad, ancho, alto, precio } = material;
-      formCotizacion.materiales[material.index] = {
+      const { index, id, cantidad, ancho, alto } = material;
+      formCotizacion.materiales[index] = {
+        ...formCotizacion.materiales[index],
         id,
         cantidad,
         formulas: {
           ancho,
           alto,
         },
-        precio,
       };
     };
 

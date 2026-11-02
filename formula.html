@@ -7,6 +7,11 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
     />
     <title>Iguapp - Fórmula</title>
+    <link
+      rel="icon"
+      href="./assets/images/iguapp-logo-v3.svg"
+      type="image/svg+xml"
+    />
     <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
@@ -30,14 +35,14 @@
       <loader-iguana v-if="firstLoad"></loader-iguana>
       <template v-else>
         <header-back :heading="heading"></header-back>
-        <div class="container pt-3">
+        <div class="container pt-3 mb-5">
           <div class="row">
             <div class="col"></div>
             <div class="col-12 col-md-8">
               <div class="d-flex justify-content-between mb-3">
                 <button
                   v-if="modoEdicion"
-                  class="btn btn-sm btn-danger"
+                  class="btn btn-sm btn-outline-danger"
                   :disabled="isLoading"
                   @click="eliminarFormula"
                 >
@@ -47,20 +52,9 @@
                   </div>
                 </button>
                 <div class="d-flex gap-2">
-                  <!-- <a
-                    v-if="modoEdicion"
-                    :href="`./cotizacion.html?id_formula=${formulaDB._id}`"
-                    class="btn btn-sm btn-outline-secondary"
-                    :disabled="isLoading"
-                  >
-                    <div class="d-flex align-items-center gap-2">
-                      <i class="bi bi-cash-coin"></i>
-                      <span>Cotizar</span>
-                    </div>
-                  </a> -->
                   <button
                     type="submit"
-                    class="btn btn-sm btn-iguapp"
+                    class="btn btn-sm btn-outline-iguapp"
                     form="form-formula"
                     :disabled="!enableSubmitFormula || isLoading"
                   >
@@ -142,65 +136,11 @@
         </button>
       </template>
 
-      <modal-base
-        ref="modalEl"
-        :title="modoEdicionMaterial ? 'Editar material' : 'Agregar material'"
-        id="modalMaterial"
-      >
-        <form @submit.prevent="onSubmitMaterial" id="form-material">
-          <div class="mb-3">
-            <label class="form-label">Material</label>
-            <auto-complete
-              :items="materialesFiltrados"
-              @select-item="selectMaterial"
-            >
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                v-model="formMaterial.autoComplete"
-              />
-            </auto-complete>
-            <div v-if="formMaterial.id" class="form-text">
-              {{ formMaterial.nombre }}
-            </div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Cantidad</label>
-            <input
-              type="number"
-              min="1"
-              class="form-control form-control-sm"
-              v-model="formMaterial.cantidad"
-            />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Fórmula ancho</label>
-            <input
-              type="text"
-              class="form-control form-control-sm"
-              v-model="formMaterial.ancho"
-            />
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Fórmula alto</label>
-            <input
-              type="text"
-              class="form-control form-control-sm"
-              v-model="formMaterial.alto"
-            />
-          </div>
-        </form>
-        <template #btn-footer>
-          <button
-            type="submit"
-            class="btn btn-iguapp"
-            form="form-material"
-            :disabled="!enableSubmitMaterial"
-          >
-            <span>{{ modoEdicionMaterial ? 'Editar' : 'Agregar' }}</span>
-          </button>
-        </template>
-      </modal-base>
+      <modal-material
+        ref="modalMaterial"
+        :materiales-db="materialesDB"
+        @submit-material="onSubmitMaterial"
+      ></modal-material>
     </div>
 
     <script

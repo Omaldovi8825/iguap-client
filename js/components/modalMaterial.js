@@ -49,7 +49,7 @@ export default {
     };
 
     const abrirModal = (material) => {
-      const { index, id, nombre, cantidad, formulas, precio } = material;
+      const { index, id, nombre, cantidad, ancho, alto } = material;
 
       formMaterial.value = {
         index,
@@ -57,9 +57,8 @@ export default {
         id,
         nombre,
         cantidad,
-        ancho: formulas.ancho,
-        alto: formulas.alto,
-        precio,
+        ancho,
+        alto,
       };
     };
 

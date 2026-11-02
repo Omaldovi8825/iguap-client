@@ -1,24 +1,13 @@
 import { Axiomi } from "./api.js";
 import HeaderBack from "./components/headerBack.js";
 import LoaderIguana from "./components/loader_iguana.js";
-import ModalBase from "./components/modal_base.js";
-import AutoComplete from "./components/autoComplete.js";
 import Spinner from "./components/spinner.js";
+import ModalMaterial from "./components/modalMaterial.js";
 import { getMateriales, formatNombreLista } from "./utils.js";
 const { createApp, ref, onMounted, reactive, computed } = Vue;
 
 const id_folder = new URLSearchParams(window.location.search).get("id_folder");
 const id_formula = new URLSearchParams(window.location.search).get("id");
-
-const formMaterialVacio = {
-  index: null,
-  id: "",
-  nombre: "",
-  autoComplete: "",
-  cantidad: "",
-  ancho: "",
-  alto: "",
-};
 
 const app = createApp({
   setup() {
@@ -31,8 +20,7 @@ const app = createApp({
       nombre: "",
       materiales: [],
     });
-    const formMaterial = ref({ ...formMaterialVacio });
-    const modalEl = ref(null);
+    const modalMaterial = ref(null);
 
     // Computed properties
     const heading = computed(() => {
@@ -48,33 +36,8 @@ const app = createApp({
       return header;
     });
 
-    const materialesFormateados = computed(() => {
-      return materialesDB.value.map((material) => {
-        return {
-          id: material._id,
-          nombre: formatNombreLista(material),
-        };
-      });
-    });
-
     const modoEdicion = computed(() => {
       return !!id_formula;
-    });
-
-    const modoEdicionMaterial = computed(() => {
-      return formMaterial.value.index !== null;
-    });
-
-    const materialesFiltrados = computed(() => {
-      const q = formMaterial.value.autoComplete.trim().toLowerCase();
-      if (!q) return [];
-      return materialesFormateados.value.filter((material) =>
-        material.nombre.toLowerCase().includes(q),
-      );
-    });
-
-    const enableSubmitMaterial = computed(() => {
-      return !!formMaterial.value.id && formMaterial.value.cantidad > 0;
     });
 
     const enableSubmitFormula = computed(() => {
@@ -133,14 +96,20 @@ const app = createApp({
       }
     };
 
-    const agregarMaterial = () => {
-      const { id, nombre, cantidad, ancho, alto } = formMaterial.value;
-      formFormula.materiales.push({ id, nombre, cantidad, ancho, alto });
+    const agregarMaterial = (material) => {
+      const { id, nombre, cantidad, ancho, alto } = material;
+      formFormula.materiales.push({
+        id,
+        nombre,
+        cantidad,
+        ancho,
+        alto,
+      });
     };
 
-    const editaMaterial = () => {
-      const { id, nombre, cantidad, ancho, alto } = formMaterial.value;
-      formFormula.materiales[formMaterial.value.index] = {
+    const editarMaterial = (material) => {
+      const { id, nombre, cantidad, ancho, alto } = material;
+      formFormula.materiales[material.index] = {
         id,
         nombre,
         cantidad,
@@ -149,36 +118,21 @@ const app = createApp({
       };
     };
 
-    const selectMaterial = (material) => {
-      const { id, nombre } = material;
-      formMaterial.value.id = id;
-      formMaterial.value.nombre = nombre;
-      formMaterial.value.autoComplete = "";
-    };
-
     const eliminarMaterial = (index) => {
       formFormula.materiales.splice(index, 1);
     };
 
     const abrirModalEditarMaterial = (index) => {
-      formMaterial.value = {
-        index,
-        autoComplete: "",
-        ...formFormula.materiales[index],
-      };
+      const material = formFormula.materiales[index];
+      modalMaterial.value.abrirModal({ index, ...material });
     };
 
-    const limpiarFormMaterial = () => {
-      formMaterial.value = { ...formMaterialVacio };
-    };
-
-    const onSubmitMaterial = () => {
-      if (modoEdicionMaterial.value) {
-        editaMaterial();
+    const onSubmitMaterial = (material) => {
+      if (material.index === null) {
+        agregarMaterial(material);
       } else {
-        agregarMaterial();
+        editarMaterial(material);
       }
-      bootstrap.Modal.getInstance(modalEl.value.$el)?.hide();
     };
 
     const guardarFormula = async () => {
@@ -234,10 +188,6 @@ const app = createApp({
 
     // Lifecycle hooks
     onMounted(async () => {
-      modalEl.value.$el.addEventListener(
-        "hidden.bs.modal",
-        limpiarFormMaterial,
-      );
       try {
         await getMaterialesDb();
         if (id_formula) {
@@ -255,20 +205,16 @@ const app = createApp({
     });
 
     return {
+      modalMaterial,
       folderDB,
       formulaDB,
-      modalEl,
       heading,
       isLoading,
       firstLoad,
       formFormula,
-      formMaterial,
-      materialesFiltrados,
+      materialesDB,
       modoEdicion,
-      modoEdicionMaterial,
-      enableSubmitMaterial,
       enableSubmitFormula,
-      selectMaterial,
       onSubmitMaterial,
       onSubmitFormula,
       eliminarMaterial,
@@ -280,8 +226,7 @@ const app = createApp({
 
 app.component("header-back", HeaderBack);
 app.component("loader-iguana", LoaderIguana);
-app.component("modal-base", ModalBase);
-app.component("auto-complete", AutoComplete);
 app.component("spinner", Spinner);
+app.component("modal-material", ModalMaterial);
 
 app.mount("#app");

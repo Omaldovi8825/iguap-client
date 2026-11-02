@@ -6,7 +6,12 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
     />
-    <title>Iguapp</title>
+    <title>Iguapp - Cotización</title>
+    <link
+      rel="icon"
+      href="./assets/images/iguapp-logo-v3.svg"
+      type="image/svg+xml"
+    />
     <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
@@ -203,7 +208,11 @@
                 </table>
               </div>
               <div>
-                <button class="btn btn-iguapp" :disabled="!enableSave" @click="guardarCotizacion">
+                <button
+                  class="btn btn-outline-iguapp"
+                  :disabled="!enableSave"
+                  @click="guardarCotizacion"
+                >
                   Guardar
                   <i class="bi bi-save ms-2"></i>
                 </button>
