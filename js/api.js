@@ -8,46 +8,55 @@ export class Axiomi {
       : PROD_URL;
   static baseApiUrl = `${this.baseUrl}api/`;
 
-  static async load() {
-    const getR = await fetch(this.baseUrl);
-    return getR.json();
+  static async request(endpoint, options = {}) {
+    const token = localStorage.getItem("token");
+    if (!token && endpoint !== "auth/login") {
+      location.replace("./login.html");
+      return new Promise(() => {});
+    }
+
+    const headers = { ...options.headers };
+    if (token) headers.Authorization = `Bearer ${token}`;
+
+    const response = await fetch(`${this.baseApiUrl}${endpoint}`, {
+      ...options,
+      headers,
+    });
+
+    if (response.status === 401 && endpoint !== "auth/login") {
+      localStorage.removeItem("token");
+      location.replace("./login.html");
+      return new Promise(() => {});
+    }
+
+    return response.json();
   }
 
-  static async get(endpoint) {
-    const getR = await fetch(`${this.baseApiUrl}${endpoint}`);
-    return getR.json();
+  static get(endpoint) {
+    return this.request(endpoint);
   }
 
-  static async post(endpoint, data) {
-    const postR = await fetch(`${this.baseApiUrl}${endpoint}`, {
+  static post(endpoint, data) {
+    return this.request(endpoint, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    return postR.json();
   }
 
-  static async put(endpoint, data) {
-    const putR = await fetch(`${this.baseApiUrl}${endpoint}`, {
+  static put(endpoint, data) {
+    return this.request(endpoint, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    return putR.json();
   }
 
-  static async delete(endpoint, data) {
-    const deleteR = await fetch(`${this.baseApiUrl}${endpoint}`, {
+  static delete(endpoint, data) {
+    return this.request(endpoint, {
       method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    return deleteR.json();
   }
 }

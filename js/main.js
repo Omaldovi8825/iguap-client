@@ -4,25 +4,20 @@ const { createApp, ref, onMounted } = Vue;
 
 const app = createApp({
   setup() {
-    const isLoading = ref(true);
+    const initialLoad = ref(true);
 
-    const startLoading = async () => {
-      try {
-        await Axiomi.load();
-      } catch (error) {
-        alert("Error al iniciar la capp");
-      } finally {
-        isLoading.value = false;
-      }
-    };
-
-    // Lifecycle hooks
     onMounted(async () => {
-      await startLoading();
+      try {
+        const { error } = await Axiomi.get("auth/check-token");
+        if (error) throw new Error(mensaje);
+        initialLoad.value = false;
+      } catch (err) {
+        console.log(err);
+      }
     });
 
     return {
-      isLoading,
+      initialLoad,
     };
   },
 });

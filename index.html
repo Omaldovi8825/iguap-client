@@ -39,7 +39,7 @@
 
   <body>
     <div id="app" v-cloak>
-      <loader-iguana v-if="isLoading"></loader-iguana>
+      <loader-iguana v-if="initialLoad"></loader-iguana>
       <template v-else>
         <div
           class="d-flex justify-content-between align-items-center p-3 bg_iguapp_dark_green"
