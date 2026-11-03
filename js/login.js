@@ -26,9 +26,7 @@ const app = createApp({
       const password = `${inOne}${inTwo}${inThree}${inFour}`;
 
       try {
-        const { error, mensaje, data } = await Axiomi.post("auth/login", {
-          password,
-        });
+        const { error, mensaje, data } = await Axiomi.login({password});
         if (error) throw new Error(mensaje);
 
         localStorage.setItem("token", data.token);
@@ -40,6 +38,7 @@ const app = createApp({
         inputThree.value = "";
         inputFour.value = "";
         inputOneEl.value?.focus();
+        localStorage.removeItem("token");
         alert(err.message);
       }
     };

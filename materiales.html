@@ -36,7 +36,13 @@
       <template v-else>
         <header-back heading="Materiales"></header-back>
         <div class="container pt-3 mb-5">
-          <div class="row">
+          <div
+            v-if="isLoading"
+            class="d-flex justify-content-center align-items-center"
+          >
+            <spinner size="2rem"></spinner>
+          </div>
+          <div v-else class="row">
             <div class="col"></div>
             <div class="col-12 col-xl-8 mb-3">
               <div class="input-group mb-3">

@@ -1,16 +1,16 @@
+const localHosts = ["localhost", "127.0.0.1"];
 const PROD_URL = "https://iguapp-server.onrender.com/";
 const LOCAL_URL = "http://localhost:3000/";
 
 export class Axiomi {
-  static baseUrl =
-    location.hostname === "localhost" || location.hostname === "127.0.0.1"
-      ? LOCAL_URL
-      : PROD_URL;
+  static baseUrl = localHosts.includes(location.hostname)
+    ? LOCAL_URL
+    : PROD_URL;
   static baseApiUrl = `${this.baseUrl}api/`;
 
   static async request(endpoint, options = {}) {
     const token = localStorage.getItem("token");
-    if (!token && endpoint !== "auth/login") {
+    if (!token) {
       location.replace("./login.html");
       return new Promise(() => {});
     }
@@ -18,18 +18,31 @@ export class Axiomi {
     const headers = { ...options.headers };
     if (token) headers.Authorization = `Bearer ${token}`;
 
-    const response = await fetch(`${this.baseApiUrl}${endpoint}`, {
-      ...options,
-      headers,
-    });
+    try {
+      const response = await fetch(`${this.baseApiUrl}${endpoint}`, {
+        ...options,
+        headers,
+      });
 
-    if (response.status === 401 && endpoint !== "auth/login") {
-      localStorage.removeItem("token");
-      location.replace("./login.html");
-      return new Promise(() => {});
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        location.replace("./login.html");
+        return new Promise(() => {});
+      }
+
+      return response.json();
+    } catch (error) {
+      location.replace("./error.html");
     }
+  }
 
-    return response.json();
+  static async login(data) {
+    const req = await fetch(`${this.baseApiUrl}auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    return req.json();
   }
 
   static get(endpoint) {

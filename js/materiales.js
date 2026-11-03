@@ -1,9 +1,10 @@
 import HeaderBack from "./components/headerBack.js";
 import LoaderIguana from "./components/loader_iguana.js";
 import ModalBase from "./components/modal_base.js";
+import Spinner from "./components/spinner.js";
 import { Axiomi } from "./api.js";
-const { createApp, ref, onMounted, computed } = Vue;
 import { getMateriales } from "./utils.js";
+const { createApp, ref, onMounted, computed } = Vue;
 
 const formMaterialVacio = {
   _id: "",
@@ -34,28 +35,23 @@ const app = createApp({
 
     const getMaterialesDB = async () => {
       const { error, data } = await getMateriales();
-      if (!error) {
-        materialesDB.value = data;
-      }
+      if (error) throw data;
+      materialesDB.value = data;
     };
 
     const onSubmit = async () => {
       try {
         isLoading.value = true;
-        let errorCall = null;
+        const request = modoEdicion.value
+          ? Axiomi.put(
+              `materiales/${formMaterial.value._id}`,
+              formMaterial.value,
+            )
+          : Axiomi.post("materiales", formMaterial.value);
 
-        if (modoEdicion.value) {
-          const { error } = await Axiomi.put(
-            `materiales/${formMaterial.value._id}`,
-            formMaterial.value,
-          );
-          errorCall = error;
-        } else {
-          const { error } = await Axiomi.post("materiales", formMaterial.value);
-          errorCall = error;
-        }
+        const { error } = await request;
 
-        if (!errorCall) {
+        if (!error) {
           await getMaterialesDB();
           limpiarFormMaterial();
         }
@@ -71,11 +67,16 @@ const app = createApp({
     const eliminarMaterial = async (id) => {
       if (!confirm("¿Eliminar este material?")) return;
       try {
+        isLoading.value = true;
         const { error } = await Axiomi.delete(`materiales/${id}`);
-        if (!error) await getMaterialesDB();
+        if (!error) {
+          await getMaterialesDB();
+        }
       } catch (error) {
         console.log(error);
         alert("Error al eliminar el material");
+      } finally {
+        isLoading.value = false;
       }
     };
 
@@ -121,11 +122,10 @@ const app = createApp({
 
       try {
         await getMaterialesDB();
+        firstLoad.value = false;
       } catch (error) {
         console.log(error);
         alert("Error al obtener los materiales");
-      } finally {
-        firstLoad.value = false;
       }
     });
 
@@ -151,5 +151,6 @@ const app = createApp({
 app.component("header-back", HeaderBack);
 app.component("loader-iguana", LoaderIguana);
 app.component("modal-base", ModalBase);
+app.component("spinner", Spinner);
 
 app.mount("#app");

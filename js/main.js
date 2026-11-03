@@ -7,12 +7,9 @@ const app = createApp({
     const initialLoad = ref(true);
 
     onMounted(async () => {
-      try {
-        const { error } = await Axiomi.get("auth/check-token");
-        if (error) throw new Error(mensaje);
+      const { error } = await Axiomi.get("auth/check-token");
+      if (!error) {
         initialLoad.value = false;
-      } catch (err) {
-        console.log(err);
       }
     });
 
