@@ -49,3 +49,7 @@ export const formatNombreLista = ({
 export const getMateriales = () => {
   return Axiomi.get("materiales");
 };
+
+export const logout = () => {
+  localStorage.removeItem("token");
+};

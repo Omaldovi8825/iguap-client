@@ -1,5 +1,6 @@
 import { Axiomi } from "./api.js";
-const { createApp, ref, watch } = Vue;
+import { logout } from "./utils.js";
+const { createApp, ref, watch, onMounted } = Vue;
 
 const app = createApp({
   setup() {
@@ -24,23 +25,23 @@ const app = createApp({
         return;
       }
 
-      const { error, mensaje, data } = await Axiomi.post("auth/login", {
-        password,
-      });
-      if (!error) {
+      try {
+        const { error, mensaje, data } = await Axiomi.login(password);
+
+        if (error) throw mensaje;
         localStorage.setItem("token", data.token);
         location.replace("./");
         return;
+      } catch (error) {
+        inputOne.value = "";
+        inputTwo.value = "";
+        inputThree.value = "";
+        inputFour.value = "";
+        inputOneEl.value?.focus();
+        logout();
+        console.error(error);
+        alert(error);
       }
-
-      inputOne.value = "";
-      inputTwo.value = "";
-      inputThree.value = "";
-      inputFour.value = "";
-      inputOneEl.value?.focus();
-      localStorage.removeItem("token");
-      console.log(data);
-      alert(mensaje);
     };
 
     //watchers
@@ -72,6 +73,10 @@ const app = createApp({
       if (String(newVal).length === 1) {
         submitForm();
       }
+    });
+
+    onMounted(() => {
+      logout();
     });
 
     return {

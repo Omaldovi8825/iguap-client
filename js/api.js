@@ -1,11 +1,15 @@
-const localHosts = ["localhost", "127.0.0.1"];
-const PROD_URL = "https://iguapp-server.onrender.com/";
-const LOCAL_URL = "http://localhost:3000/";
+import {
+  LOCAL_HOSTS,
+  API_LOCAL_URL,
+  API_PROD_URL,
+  HOST_NAME,
+} from "./constants.js";
 
 export class Axiomi {
-  static baseUrl = localHosts.includes(location.hostname)
-    ? LOCAL_URL
-    : PROD_URL;
+  static baseUrl = LOCAL_HOSTS.includes(HOST_NAME)
+    ? API_LOCAL_URL
+    : API_PROD_URL;
+  // static baseUrl = API_PROD_URL;
   static baseApiUrl = `${this.baseUrl}api/`;
 
   static async request(endpoint, options = {}) {
@@ -28,6 +32,16 @@ export class Axiomi {
     } catch (error) {
       location.replace("./error.html");
     }
+  }
+
+  static async login(password) {
+    const req = await fetch(`${this.baseApiUrl}auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+
+    return req.json();
   }
 
   static get(endpoint) {
