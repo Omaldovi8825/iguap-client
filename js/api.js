@@ -4,7 +4,7 @@ import {
   API_PROD_URL,
   HOST_NAME,
 } from "./constants.js";
-
+import { logout } from "./utils.js";
 export class Axiomi {
   static baseUrl = LOCAL_HOSTS.includes(HOST_NAME)
     ? API_LOCAL_URL
@@ -14,6 +14,10 @@ export class Axiomi {
 
   static async request(endpoint, options = {}) {
     const token = localStorage.getItem("token");
+    if (!token) {
+      logout();
+      return new Promise(() => {});
+    }
     const headers = { ...options.headers, Authorization: token };
 
     try {
@@ -23,8 +27,7 @@ export class Axiomi {
       });
 
       if (response.status === 401) {
-        localStorage.removeItem("token");
-        location.replace("./login.html");
+        logout();
         return new Promise(() => {});
       }
 

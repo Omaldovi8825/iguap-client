@@ -52,4 +52,10 @@ export const getMateriales = () => {
 
 export const logout = () => {
   localStorage.removeItem("token");
+  location.replace("./login.html");
+};
+
+export const login = (token) => {
+  localStorage.setItem("token", token);
+  location.replace("./");
 };
