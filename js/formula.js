@@ -48,53 +48,57 @@ const app = createApp({
       );
     });
 
+    const idFolder = computed(() => {
+      return id_folder || formulaDB.value?.id_folder;
+    });
+
     const esFormulaHuerfana = computed(() => {
-      return !folderDB.value?._id;
+      return !idFolder.value;
     });
 
     // Methods
     const getMaterialesDb = async () => {
-      const { error, data } = await getMateriales();
-      if (!error) {
-        materialesDB.value = data;
-      }
+      const { error, data, mensaje } = await getMateriales();
+      if (error) throw mensaje;
+      materialesDB.value = data;
     };
 
     const getFormula = async () => {
-      const { error, data } = await Axiomi.get(`formulas/${id_formula}`);
-      if (!error) {
-        formulaDB.value = data;
+      const { error, data, mensaje } = await Axiomi.get(
+        `formulas/${id_formula}`,
+      );
+      if (error) throw mensaje;
 
-        const { nombre, materiales } = data;
+      formulaDB.value = data;
 
-        const materialesFormateados = materiales.map((material) => {
-          const { id, formulas, cantidad } = material;
+      const { nombre, materiales } = data;
 
-          const materialDB = materialesDB.value.find(({ _id }) => _id === id);
+      const materialesFormateados = materiales.map((material) => {
+        const { id, formulas, cantidad } = material;
 
-          return {
-            id,
-            nombre: formatNombreLista(materialDB),
-            cantidad: cantidad,
-            ancho: formulas.ancho,
-            alto: formulas.alto,
-          };
-        });
+        const materialDB = materialesDB.value.find(({ _id }) => _id === id);
 
-        Object.assign(formFormula, {
-          nombre,
-          materiales: materialesFormateados,
-        });
-      }
+        return {
+          id,
+          nombre: formatNombreLista(materialDB),
+          cantidad: cantidad,
+          ancho: formulas.ancho,
+          alto: formulas.alto,
+        };
+      });
+
+      Object.assign(formFormula, {
+        nombre,
+        materiales: materialesFormateados,
+      });
     };
 
     const getFolder = async (id_folder) => {
-      const { error, data } = await Axiomi.get(
-        `folders-formulas/${id_folder}/basic`,
+      const { error, data, mensaje } = await Axiomi.get(
+        `folders-formulas/${id_folder}`,
       );
-      if (!error) {
-        folderDB.value = data;
-      }
+      if (error) throw mensaje;
+      folderDB.value = data;
     };
 
     const agregarMaterial = (material) => {
@@ -136,20 +140,6 @@ const app = createApp({
       }
     };
 
-    const guardarFormula = async () => {
-      const request = modoEdicion.value
-        ? Axiomi.put(`formulas/${id_formula}`, formFormula)
-        : Axiomi.post("formulas", {
-            id_folder,
-            ...formFormula,
-          });
-      const { error } = await request;
-
-      if (!error) {
-        redirectToFolder();
-      }
-    };
-
     const redirectToFolder = () => {
       if (esFormulaHuerfana.value) {
         location.href = `/formulas.html`;
@@ -159,32 +149,35 @@ const app = createApp({
     };
 
     const onSubmitFormula = async () => {
-      try {
-        isLoading.value = true;
-        await guardarFormula();
-      } catch (error) {
-        alert(error.message);
-      } finally {
-        isLoading.value = false;
+      isLoading.value = true;
+      const request = modoEdicion.value
+        ? Axiomi.put(`formulas/${id_formula}`, formFormula)
+        : Axiomi.post("formulas", {
+            id_folder,
+            ...formFormula,
+          });
+      const { error, mensaje } = await request;
+
+      if (!error) {
+        return redirectToFolder();
       }
+      isLoading.value = false;
+      alert(mensaje);
     };
 
     const eliminarFormula = async () => {
       if (!confirm("¿Estás seguro de querer eliminar esta fórmula?")) {
         return;
       }
-      try {
-        isLoading.value = true;
-        const { error } = await Axiomi.delete(`formulas/${id_formula}`);
-        if (!error) {
-          redirectToFolder();
-        }
-      } catch (error) {
-        console.log(error);
-        alert("Error al eliminar la fórmula");
-      } finally {
-        isLoading.value = false;
+
+      isLoading.value = true;
+      const { error, mensaje } = await Axiomi.delete(`formulas/${id_formula}`);
+      isLoading.value = false;
+      if (error) {
+        alert(mensaje);
+        return;
       }
+      redirectToFolder();
     };
 
     const initSortable = () => {
@@ -214,16 +207,14 @@ const app = createApp({
         if (id_formula) {
           await getFormula();
         }
-        if (id_folder || formulaDB.value?.id_folder) {
-          await getFolder(id_folder || formulaDB.value?.id_folder);
+        if (idFolder.value) {
+          await getFolder(idFolder.value);
         }
-      } catch (error) {
-        console.log(error);
-        alert("Error al obtener los datos");
-      } finally {
         firstLoad.value = false;
         await nextTick();
         initSortable();
+      } catch (error) {
+        alert(error);
       }
     });
 

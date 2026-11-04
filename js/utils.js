@@ -32,28 +32,6 @@ export const aplicarFormula = (valor, formula) => {
   }, valor);
 };
 
-export const formatFormula = ({ ancho, alto }) => {
-  return [ancho && `B${ancho}`, alto && `A${alto}`].filter(Boolean).join(" x ");
-};
-
-export const formatMedida = (ancho, alto) => {
-  return [ancho && ancho, alto && alto].filter(Boolean).join(" x ");
-};
-
-export const formatNombreTabla = ({
-  categoria,
-  nombre,
-  pieza,
-  tipo,
-  medida,
-  unidad,
-  color,
-}) => {
-  return [categoria, nombre, pieza, tipo, medida, unidad, color]
-    .filter(Boolean)
-    .join(" ");
-};
-
 export const formatNombreLista = ({
   categoria,
   nombre,

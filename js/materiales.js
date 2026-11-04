@@ -3,7 +3,7 @@ import LoaderIguana from "./components/loader_iguana.js";
 import ModalBase from "./components/modal_base.js";
 import Spinner from "./components/spinner.js";
 import { Axiomi } from "./api.js";
-import { getMateriales } from "./utils.js";
+import { getMateriales, formatMoney } from "./utils.js";
 const { createApp, ref, onMounted, computed } = Vue;
 
 const formMaterialVacio = {
@@ -109,6 +109,15 @@ const app = createApp({
       });
     });
 
+    const materialesFormateados = computed(() => {
+      return materialesFiltrados.value.map((material) => {
+        return {
+          ...material,
+          precio: formatMoney(material.precio),
+        };
+      });
+    });
+
     const modoEdicion = computed(() => {
       return formMaterial.value._id !== "";
     });
@@ -138,7 +147,7 @@ const app = createApp({
       formMaterial,
       materialesDB,
       search,
-      materialesFiltrados,
+      materialesFormateados,
       modoEdicion,
       onSubmit,
       abrirModalEditar,

@@ -97,3 +97,10 @@ select {
   user-select: none;
   min-width: 2.75rem;
 }
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--iguapp-green);
+  box-shadow: 0 0 0 0.25rem
+    color-mix(in srgb, var(--iguapp-green) 25%, transparent);
+}

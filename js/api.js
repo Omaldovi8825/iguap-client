@@ -10,13 +10,7 @@ export class Axiomi {
 
   static async request(endpoint, options = {}) {
     const token = localStorage.getItem("token");
-    if (!token) {
-      location.replace("./login.html");
-      return new Promise(() => {});
-    }
-
-    const headers = { ...options.headers };
-    if (token) headers.Authorization = `Bearer ${token}`;
+    const headers = { ...options.headers, Authorization: token };
 
     try {
       const response = await fetch(`${this.baseApiUrl}${endpoint}`, {
@@ -34,15 +28,6 @@ export class Axiomi {
     } catch (error) {
       location.replace("./error.html");
     }
-  }
-
-  static async login(data) {
-    const req = await fetch(`${this.baseApiUrl}auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    return req.json();
   }
 
   static get(endpoint) {

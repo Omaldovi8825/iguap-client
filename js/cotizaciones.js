@@ -3,7 +3,7 @@ import HeaderBack from "./components/headerBack.js";
 import LoaderIguana from "./components/loader_iguana.js";
 import CardFolder from "./components/cardFolder.js";
 import Spinner from "./components/spinner.js";
-const { createApp, ref, onMounted, reactive, watch, computed, nextTick } = Vue;
+const { createApp, ref, onMounted, computed } = Vue;
 
 const app = createApp({
   setup() {
@@ -16,13 +16,12 @@ const app = createApp({
       },
     });
     const search = ref("");
-    const expedientes = ref([]);
+    const expedientesDB = ref([]);
 
     const getExpedientes = async () => {
-      const { error, data } = await Axiomi.get("expedientes");
-      if (!error) {
-        expedientes.value = data;
-      }
+      const { error, data, mensaje } = await Axiomi.get("expedientes");
+      if (error) throw mensaje;
+      expedientesDB.value = data;
     };
 
     const createExpediente = async () => {
@@ -32,24 +31,20 @@ const app = createApp({
       }
       try {
         isLoading.value = true;
-        const { error } = await Axiomi.post("expedientes", {
+        const { error, mensaje } = await Axiomi.post("expedientes", {
           nombre: form.value.nombre.value,
         });
+        if (error) throw mensaje;
 
-        if (!error) {
-          form.value = {
-            nombre: {
-              value: "",
-              error: "",
-            },
-          };
-          await getExpedientes();
-        } else {
-          alert("Error al crear el expediente");
-        }
+        form.value = {
+          nombre: {
+            value: "",
+            error: "",
+          },
+        };
+        await getExpedientes();
       } catch (error) {
-        console.error(error);
-        alert("Error al crear el expediente");
+        alert(error);
       } finally {
         isLoading.value = false;
       }
@@ -61,15 +56,11 @@ const app = createApp({
       }
       try {
         isLoading.value = true;
-        const { error } = await Axiomi.delete(`expedientes/${id}`);
-        if (!error) {
-          await getExpedientes();
-        } else {
-          alert("Error al eliminar el expediente");
-        }
+        const { error, mensaje } = await Axiomi.delete(`expedientes/${id}`);
+        if (error) throw mensaje;
+        await getExpedientes();
       } catch (error) {
-        console.error(error);
-        alert("Error al eliminar el expediente");
+        alert(error);
       } finally {
         isLoading.value = false;
       }
@@ -78,17 +69,13 @@ const app = createApp({
     const guardarEdicion = async (id, nombre) => {
       try {
         isLoading.value = true;
-        const { error } = await Axiomi.put(`expedientes/${id}`, {
+        const { error, mensaje } = await Axiomi.put(`expedientes/${id}`, {
           nombre: nombre,
         });
-        if (!error) {
-          await getExpedientes();
-        } else {
-          alert("Error al guardar la edición");
-        }
+        if (error) throw mensaje;
+        await getExpedientes();
       } catch (error) {
-        console.error(error);
-        alert("Error al guardar la edición");
+        alert(error);
       } finally {
         isLoading.value = false;
       }
@@ -96,7 +83,7 @@ const app = createApp({
 
     //computed
     const filteredExpedientes = computed(() => {
-      return expedientes.value.filter((expediente) => {
+      return expedientesDB.value.filter((expediente) => {
         return expediente.nombre
           .toLowerCase()
           .includes(search.value.toLowerCase());
@@ -106,12 +93,10 @@ const app = createApp({
     //Life cycle
     onMounted(async () => {
       try {
-        initialLoad.value = true;
         await getExpedientes();
         initialLoad.value = false;
       } catch (error) {
-        alert("Error al obtener los expedientes");
-        console.error(error);
+        alert(error);
       }
     });
 

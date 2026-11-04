@@ -31,7 +31,6 @@ const app = createApp({
     const tbodyMateriales = ref(null);
 
     const formCotizacion = reactive({
-      id_expediente: idExpediente,
       nombre: "",
       formula: {
         id_folder: "",
@@ -46,23 +45,22 @@ const app = createApp({
 
     // Methods
     const getExpediente = async () => {
-      const id_expediente = idExpediente || formCotizacion.id_expediente;
-      if (!id_expediente) return;
-
-      const { error, data } = await Axiomi.get(`expedientes/${id_expediente}`);
-      if (error) throw new Error(data);
+      const { error, data, mensaje } = await Axiomi.get(
+        `expedientes/${idExpedienteComputed.value}`,
+      );
+      if (error) throw mensaje;
       expedienteDB.value = data;
     };
 
     const getFoldersFormulasDB = async () => {
-      const { error, data } = await Axiomi.get("folders-formulas");
-      if (error) throw new Error(data);
+      const { error, data, mensaje } = await Axiomi.get("folders-formulas");
+      if (error) throw mensaje;
       foldersFormulasDB.value = data;
     };
 
     const getMaterialesDB = async () => {
-      const { error, data } = await getMateriales();
-      if (error) throw new Error(data);
+      const { error, data, mensaje } = await getMateriales();
+      if (error) throw mensaje;
       materialesDB.value = data;
     };
 
@@ -75,33 +73,25 @@ const app = createApp({
             ? Axiomi.get("formulas/single")
             : Axiomi.get(`formulas?id_folder=${idFolder}`);
 
-        const { error, data } = await request;
-
-        if (error) throw new Error(data);
+        const { error, data, mensaje } = await request;
+        if (error) throw mensaje;
         formulasDB.value = data;
       } catch (error) {
-        console.log(error);
-        alert("Error al obtener las fórmulas");
+        console.error(error);
+        alert(error);
       }
     };
 
     const getCotizacionDB = async () => {
-      const { error, data } = await Axiomi.get(`cotizaciones/${idCotizacion}`);
-      if (error) throw new Error(data);
+      const { error, data, mensaje } = await Axiomi.get(
+        `cotizaciones/${idCotizacion}`,
+      );
+      if (error) throw mensaje;
 
       cotizacionDB.value = data;
 
-      const {
-        id_expediente,
-        nombre,
-        ancho,
-        alto,
-        manoObra,
-        extras,
-        materiales,
-      } = data;
+      const { nombre, ancho, alto, manoObra, extras, materiales } = data;
       Object.assign(formCotizacion, {
-        id_expediente,
         nombre,
         formula: {
           id_folder: "",
@@ -182,7 +172,7 @@ const app = createApp({
       });
 
       const cotizacionFormatted = {
-        id_expediente: expedienteDB.value._id,
+        id_expediente: idExpedienteComputed.value,
         ...resto,
         materiales: materialesFormatted,
       };
@@ -215,20 +205,16 @@ const app = createApp({
     const guardarCotizacion = async () => {
       try {
         isLoading.value = true;
-
         const request = modoEdicion.value
           ? actualizarCotizacion()
           : crearCotizacion();
 
-        const { error, data } = await request;
-
-        if (!error) {
-          location.href = `/expediente.html?id=${expedienteDB.value._id}`;
-        } else {
-          throw new Error(data);
-        }
+        const { error, mensaje } = await request;
+        if (error) throw mensaje;
+        location.href = `/expediente.html?id=${idExpedienteComputed.value}`;
       } catch (error) {
-        alert("Error al guardar la cotización");
+        console.error(error);
+        alert(error);
       } finally {
         isLoading.value = false;
       }
@@ -253,6 +239,10 @@ const app = createApp({
         },
       });
     };
+
+    const idExpedienteComputed = computed(() => {
+      return idExpediente || cotizacionDB.value?.id_expediente;
+    });
 
     // Computed properties
     const modoEdicion = computed(() => {
@@ -359,14 +349,15 @@ const app = createApp({
         if (idCotizacion) {
           await getCotizacionDB();
         }
-        await getExpediente();
-      } catch (error) {
-        console.log(error);
-        alert("Error al obtener los datos de la cotización");
-      } finally {
+        if (idExpedienteComputed.value) {
+          await getExpediente();
+        }
         initialLoad.value = false;
         await nextTick();
         initSortable();
+      } catch (error) {
+        console.error(error);
+        alert(error);
       }
     });
 

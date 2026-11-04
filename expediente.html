@@ -35,7 +35,7 @@
     <div id="app" v-cloak>
       <loader-iguana v-if="initialLoad"></loader-iguana>
       <template v-else>
-        <header-back :heading="expediente.nombre"></header-back>
+        <header-back :heading="expedienteDB.nombre"></header-back>
         <div class="container pt-3 mb-5">
           <div class="row">
             <div class="col"></div>
@@ -82,7 +82,7 @@
                 </table>
               </div>
               <a
-                :href="`./cotizacion.html?id_expediente=${expediente._id}`"
+                :href="`./cotizacion.html?id_expediente=${expedienteDB._id}`"
                 class="btn btn-iguapp rounded-circle position-fixed bottom-0 end-0 m-4 d-flex align-items-center justify-content-center p-0"
                 style="width: 3.5rem; height: 3.5rem"
                 aria-label="Nueva cotización"

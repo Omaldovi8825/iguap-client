@@ -19,28 +19,28 @@ const app = createApp({
       const inThree = inputThree.value;
       const inFour = inputFour.value;
 
-      if (inOne === "" || inTwo === "" || inThree === "" || inFour === "") {
+      const password = `${inOne}${inTwo}${inThree}${inFour}`;
+      if (password.length !== 4) {
         return;
       }
 
-      const password = `${inOne}${inTwo}${inThree}${inFour}`;
-
-      try {
-        const { error, mensaje, data } = await Axiomi.login({password});
-        if (error) throw new Error(mensaje);
-
+      const { error, mensaje, data } = await Axiomi.post("auth/login", {
+        password,
+      });
+      if (!error) {
         localStorage.setItem("token", data.token);
         location.replace("./");
-      } catch (err) {
-        console.log(err);
-        inputOne.value = "";
-        inputTwo.value = "";
-        inputThree.value = "";
-        inputFour.value = "";
-        inputOneEl.value?.focus();
-        localStorage.removeItem("token");
-        alert(err.message);
+        return;
       }
+
+      inputOne.value = "";
+      inputTwo.value = "";
+      inputThree.value = "";
+      inputFour.value = "";
+      inputOneEl.value?.focus();
+      localStorage.removeItem("token");
+      console.log(data);
+      alert(mensaje);
     };
 
     //watchers

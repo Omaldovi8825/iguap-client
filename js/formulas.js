@@ -3,7 +3,7 @@ import LoaderIguana from "./components/loader_iguana.js";
 import CardFolder from "./components/cardFolder.js";
 import Spinner from "./components/spinner.js";
 import { Axiomi } from "./api.js";
-const { createApp, ref, onMounted, reactive, watch, computed, nextTick } = Vue;
+const { createApp, ref, onMounted, computed } = Vue;
 
 const app = createApp({
   setup() {
@@ -21,17 +21,15 @@ const app = createApp({
 
     //Methods
     const getFoldersFormulas = async () => {
-      const { error, data } = await Axiomi.get("folders-formulas");
-      if (!error) {
-        foldersFormulasDB.value = data;
-      }
+      const { error, data, mensaje } = await Axiomi.get("folders-formulas");
+      if (error) throw mensaje;
+      foldersFormulasDB.value = data;
     };
 
     const getFormulasSingle = async () => {
-      const { error, data } = await Axiomi.get("formulas/single");
-      if (!error) {
-        formulasSingleDB.value = data;
-      }
+      const { error, data, mensaje } = await Axiomi.get("formulas/single");
+      if (error) throw mensaje;
+      formulasSingleDB.value = data;
     };
 
     const createFolder = async () => {
@@ -41,24 +39,20 @@ const app = createApp({
       }
       try {
         isLoading.value = true;
-        const { error, data } = await Axiomi.post("folders-formulas", {
+        const { error, mensaje } = await Axiomi.post("folders-formulas", {
           nombre: form.value.nombre.value,
         });
+        if (error) throw mensaje;
 
-        if (!error) {
-          form.value = {
-            nombre: {
-              value: "",
-              error: "",
-            },
-          };
-          await getFoldersFormulas();
-        } else {
-          alert("Error al crear el expediente");
-        }
+        form.value = {
+          nombre: {
+            value: "",
+            error: "",
+          },
+        };
+        await getFoldersFormulas();
       } catch (error) {
-        console.error(error);
-        alert("Error al crear el expediente");
+        alert(error);
       } finally {
         isLoading.value = false;
       }
@@ -67,17 +61,13 @@ const app = createApp({
     const guardarEdicion = async (id, nombre) => {
       try {
         isLoading.value = true;
-        const { error } = await Axiomi.put(`folders-formulas/${id}`, {
+        const { error, mensaje } = await Axiomi.put(`folders-formulas/${id}`, {
           nombre,
         });
-        if (!error) {
-          await getFoldersFormulas();
-        } else {
-          alert("Error al guardar la edición");
-        }
+        if (error) throw mensaje;
+        await getFoldersFormulas();
       } catch (error) {
-        console.error(error);
-        alert("Error al guardar la edición");
+        alert(error);
       } finally {
         isLoading.value = false;
       }
@@ -89,13 +79,13 @@ const app = createApp({
       }
       try {
         isLoading.value = true;
-        const { error } = await Axiomi.delete(`folders-formulas/${id}`);
-        if (!error) {
-          await getFoldersFormulas();
-        }
+        const { error, mensaje } = await Axiomi.delete(
+          `folders-formulas/${id}`,
+        );
+        if (error) throw mensaje;
+        await getFoldersFormulas();
       } catch (error) {
-        console.error(error);
-        alert("Error al eliminar el folder");
+        alert(error);
       } finally {
         isLoading.value = false;
       }
@@ -121,10 +111,9 @@ const app = createApp({
       try {
         await getFoldersFormulas();
         await getFormulasSingle();
-      } catch (error) {
-        alert("Error al obtener las fórmulas");
-      } finally {
         initialLoad.value = false;
+      } catch (error) {
+        alert(error);
       }
     });
 

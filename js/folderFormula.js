@@ -1,7 +1,7 @@
 import HeaderBack from "./components/headerBack.js";
 import LoaderIguana from "./components/loader_iguana.js";
 import { Axiomi } from "./api.js";
-const { createApp, ref, onMounted, reactive, watch, computed, nextTick } = Vue;
+const { createApp, ref, onMounted } = Vue;
 
 const id_folder = new URLSearchParams(window.location.search).get("id_folder");
 
@@ -13,35 +13,31 @@ const app = createApp({
 
     //Methods
     const getFolderFormula = async () => {
-      const { error, data } = await Axiomi.get(`folders-formulas/${id_folder}`);
-      if (!error) {
-        folderDB.value = data;
-      } else {
-        throw new Error(data);
-      }
+      const { error, data, mensaje } = await Axiomi.get(
+        `folders-formulas/${id_folder}`,
+      );
+      if (error) throw mensaje;
+      folderDB.value = data;
     };
 
     const getFormulasDB = async () => {
-      const { error, data } = await Axiomi.get(
+      const { error, data, mensaje } = await Axiomi.get(
         `formulas?id_folder=${id_folder}`,
       );
-      if (!error) {
-        formulasDB.value = data;
-      } else {
-        throw new Error(data);
-      }
+      if (error) throw mensaje;
+      formulasDB.value = data;
     };
 
     const clonarFormula = async (id_formula) => {
       try {
         isLoading.value = true;
-        const { error } = await Axiomi.post(`formulas/${id_formula}/clone`);
-        if (!error) {
-          await getFormulasDB();
-        }
+        const { error, mensaje } = await Axiomi.post(
+          `formulas/${id_formula}/clone`,
+        );
+        if (error) throw mensaje;
+        await getFormulasDB();
       } catch (error) {
-        console.log(error);
-        alert("Error al clonar la fórmula");
+        alert(error);
       } finally {
         isLoading.value = false;
       }
@@ -54,11 +50,9 @@ const app = createApp({
       try {
         await getFolderFormula();
         await getFormulasDB();
-      } catch (error) {
-        console.log(error);
-        alert("Error al cargar el folder de fórmulas");
-      } finally {
         isLoading.value = false;
+      } catch (error) {
+        alert(error);
       }
     });
 
