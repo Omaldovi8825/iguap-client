@@ -1,7 +1,7 @@
 export default {
   props: ["heading"],
   template: `
-    <div class="d-flex justify-content-between align-items-center bg_iguapp_green p-3">
+    <div class="d-flex justify-content-between align-items-center bg_iguapp_green sticky-top p-3">
         <a href="./" class="fs-4">
             <i class="bi bi-house text-white"></i>
         </a>
